@@ -14,6 +14,9 @@ class ObdService implements IObdScanner {
   final _stateController = StreamController<ObdConnectionState>.broadcast();
   ObdConnectionState _currentState = ObdConnectionState.disconnected;
 
+  @override
+  Stream<ObdConnectionState> get connectionState => _stateController.stream;
+
   // Buffer for accumulating responses
   final StringBuffer _buffer = StringBuffer();
   Completer<String>? _responseCompleter;
@@ -99,29 +102,21 @@ class ObdService implements IObdScanner {
   }
 
   @override
-  Stream<int> get engineRpmStream {
-    return Stream.periodic(const Duration(seconds: 1)).asyncMap((_) async {
-      if (_currentState != ObdConnectionState.connected) return 0;
-
-      try {
-        String response = await _sendCommand("010C");
-        // if response successful => 410C
-        if (response.startsWith("410C") && response.length >= 8) {
-          // Extract bytes A and B (2 HEX symbols each)
-          String hexA = response.substring(4, 6);
-          String hexB = response.substring(6, 8);
-
-          int a = int.parse(hexA, radix: 16);
-          int b = int.parse(hexB, radix: 16);
-
-          // Formula for OBD2 RPM: ((A * 256) + B) / 4
-          return ((a * 256) + b) ~/ 4;
-        }
-      } catch (e) {
-        log("Error reading RPM: $e");
+  Future<int> readEngineRpm() async {
+    if (_currentState != ObdConnectionState.connected) return 0;
+    try {
+      String response = await _sendCommand("010C");
+      if (response.startsWith("410C") && response.length >= 8) {
+        String hexA = response.substring(4, 6);
+        String hexB = response.substring(6, 8);
+        int a = int.parse(hexA, radix: 16);
+        int b = int.parse(hexB, radix: 16);
+        return ((a * 256) + b) ~/ 4;
       }
-      return 0;
-    });
+    } catch (e) {
+      log("Error reading RPM: $e");
+    }
+    return 0;
   }
 
   @override
@@ -209,79 +204,65 @@ class ObdService implements IObdScanner {
     return await _sendCommand(hexCommand);
   }
 
-  @override
-  Stream<ObdConnectionState> get connectionState => _stateController.stream;
 
   @override
-  Stream<int> get vehicleSpeedStream {
-    return Stream.periodic(const Duration(seconds: 1)).asyncMap((_) async {
-      if (_currentState != ObdConnectionState.connected) return 0;
-      try {
-        String response = await _sendCommand("010D");
-        // Expected response: 410D XX (where XX is the speed in HEX)
-        if (response.startsWith("410D") && response.length >= 6) {
-          String hexA = response.substring(4, 6);
-          return int.parse(hexA, radix: 16); // Formula: A (in km/h)
-        }
-      } catch (e) {
-        log("Error reading speed: $e");
+  Future<int> readVehicleSpeed() async {
+    if (_currentState != ObdConnectionState.connected) return 0;
+    try {
+      String response = await _sendCommand("010D");
+      if (response.startsWith("410D") && response.length >= 6) {
+        String hexA = response.substring(4, 6);
+        return int.parse(hexA, radix: 16);
       }
-      return 0;
-    });
+    } catch (e) {
+      log("Error reading speed: $e");
+    }
+    return 0;
   }
 
   @override
-  Stream<int> get coolantTempStream {
-    return Stream.periodic(const Duration(seconds: 1)).asyncMap((_) async {
-      if (_currentState != ObdConnectionState.connected) return 0;
-      try {
-        String response = await _sendCommand("0105");
-        // Expected response: 4105 XX
-        if (response.startsWith("4105") && response.length >= 6) {
-          String hexA = response.substring(4, 6);
-          return int.parse(hexA, radix: 16) - 40; // Formula: A - 40 (in °C)
-        }
-      } catch (e) {
-        log("Error reading coolant temperature: $e");
+  Future<int> readCoolantTemp() async {
+    if (_currentState != ObdConnectionState.connected) return 0;
+    try {
+      String response = await _sendCommand("0105");
+      if (response.startsWith("4105") && response.length >= 6) {
+        String hexA = response.substring(4, 6);
+        return int.parse(hexA, radix: 16) - 40;
       }
-      return 0;
-    });
+    } catch (e) {
+      log("Error reading coolant temp: $e");
+    }
+    return 0;
   }
 
   @override
-  Stream<int> get engineLoadStream {
-    return Stream.periodic(const Duration(seconds: 1)).asyncMap((_) async {
-      if (_currentState != ObdConnectionState.connected) return 0;
-      try {
-        String response = await _sendCommand("0104");
-        if (response.startsWith("4104") && response.length >= 6) {
-          String hexA = response.substring(4, 6);
-          // Formula: A * 100 / 255 (in percentages %)
-          return (int.parse(hexA, radix: 16) * 100) ~/ 255;
-        }
-      } catch (e) {
-        log("Error reading engine load: $e");
+  Future<int> readEngineLoad() async {
+    if (_currentState != ObdConnectionState.connected) return 0;
+    try {
+      String response = await _sendCommand("0104");
+      if (response.startsWith("4104") && response.length >= 6) {
+        String hexA = response.substring(4, 6);
+        return (int.parse(hexA, radix: 16) * 100) ~/ 255;
       }
-      return 0;
-    });
+    } catch (e) {
+      log("Error reading engine load: $e");
+    }
+    return 0;
   }
 
   @override
-  Stream<int> get throttlePositionStream {
-    return Stream.periodic(const Duration(seconds: 1)).asyncMap((_) async {
-      if (_currentState != ObdConnectionState.connected) return 0;
-      try {
-        String response = await _sendCommand("0111");
-        if (response.startsWith("4111") && response.length >= 6) {
-          String hexA = response.substring(4, 6);
-          // Formula: A * 100 / 255 (in percentages %)
-          return (int.parse(hexA, radix: 16) * 100) ~/ 255;
-        }
-      } catch (e) {
-        log("Error reading throttle position: $e");
+  Future<int> readThrottlePosition() async {
+    if (_currentState != ObdConnectionState.connected) return 0;
+    try {
+      String response = await _sendCommand("0111");
+      if (response.startsWith("4111") && response.length >= 6) {
+        String hexA = response.substring(4, 6);
+        return (int.parse(hexA, radix: 16) * 100) ~/ 255;
       }
-      return 0;
-    });
+    } catch (e) {
+      log("Error reading throttle position: $e");
+    }
+    return 0;
   }
 
 }

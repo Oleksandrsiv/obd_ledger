@@ -18,16 +18,16 @@ abstract interface class IObdScanner {
 
   Future<int> readDistanceSinceCodesCleared();
 
-  /// stream data
-  Stream<int> get engineRpmStream;
+  /// Real-time requests
+  Future<int> readEngineRpm();
 
-  Stream<int> get vehicleSpeedStream;
+  Future<int> readVehicleSpeed();
 
-  Stream<int> get coolantTempStream;
+  Future<int> readCoolantTemp();
 
-  Stream<int> get throttlePositionStream;
+  Future<int> readThrottlePosition();
 
-  Stream<int> get engineLoadStream;
+  Future<int> readEngineLoad();
 
   /// for raw requests
   Future<String> sendRawCommand(String hexCommand);
