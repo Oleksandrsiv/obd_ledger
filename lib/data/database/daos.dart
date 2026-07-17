@@ -31,4 +31,12 @@ class TripsDao extends DatabaseAccessor<AppDatabase> with _$TripsDaoMixin {
 
   Future<List<TripPoint>> getPointsForTrip(int tripId) =>
       (select(tripPoints)..where((p) => p.tripId.equals(tripId))).get();
+
+  Future<int> updateTripFields(int tripId, int endTimestamp) {
+    return (update(trips)..where((t) => t.id.equals(tripId))).write(
+      TripsCompanion(
+        endTimestamp: Value(endTimestamp),
+      ),
+    );
+  }
 }
