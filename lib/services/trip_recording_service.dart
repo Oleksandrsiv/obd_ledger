@@ -1,8 +1,9 @@
 import 'dart:async';
+import 'dart:developer';
 import '../../data/database/daos.dart';
 import '../../data/database/database.dart';
 import '../../data/models/realtime_data_model.dart';
-import 'iobd_service.dart';
+import 'obd_service/iobd_service.dart';
 
 
 class TripRecordingService {
@@ -100,8 +101,7 @@ class TripRecordingService {
         }
       }
     } catch (e) {
-      // У випадку помилки можна залогувати або додати обробку
-      print("Error reading telemetry: $e");
+      log("Error reading telemetry: $e");
     }
   }
 

@@ -1,0 +1,15 @@
+part of 'car_bloc.dart';
+
+sealed class CarEvent {}
+
+/// Load a list of all cars from the database
+class LoadCars extends CarEvent {}
+
+/// Make a car active
+class SelectCar extends CarEvent {
+  final int carId;
+  SelectCar(this.carId);
+}
+
+/// Called every time OBD successfully connects.
+class SyncMileage extends CarEvent {}

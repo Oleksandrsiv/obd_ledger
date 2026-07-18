@@ -15,6 +15,7 @@ class CarsDao extends DatabaseAccessor<AppDatabase> with _$CarsDaoMixin {
 
   Future<int> insertOrUpdateCar(Insertable<Car> car) =>
       into(cars).insertOnConflictUpdate(car);
+
 }
 
 @DriftAccessor(tables: [Trips, TripPoints])
