@@ -1705,19 +1705,246 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
   }
 }
 
+class $DtcCacheTable extends DtcCache
+    with TableInfo<$DtcCacheTable, DtcCacheData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DtcCacheTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  @override
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [code, description];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'dtc_cache';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DtcCacheData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {code};
+  @override
+  DtcCacheData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DtcCacheData(
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      )!,
+    );
+  }
+
+  @override
+  $DtcCacheTable createAlias(String alias) {
+    return $DtcCacheTable(attachedDatabase, alias);
+  }
+}
+
+class DtcCacheData extends DataClass implements Insertable<DtcCacheData> {
+  final String code;
+  final String description;
+  const DtcCacheData({required this.code, required this.description});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['code'] = Variable<String>(code);
+    map['description'] = Variable<String>(description);
+    return map;
+  }
+
+  DtcCacheCompanion toCompanion(bool nullToAbsent) {
+    return DtcCacheCompanion(
+      code: Value(code),
+      description: Value(description),
+    );
+  }
+
+  factory DtcCacheData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DtcCacheData(
+      code: serializer.fromJson<String>(json['code']),
+      description: serializer.fromJson<String>(json['description']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'code': serializer.toJson<String>(code),
+      'description': serializer.toJson<String>(description),
+    };
+  }
+
+  DtcCacheData copyWith({String? code, String? description}) => DtcCacheData(
+    code: code ?? this.code,
+    description: description ?? this.description,
+  );
+  DtcCacheData copyWithCompanion(DtcCacheCompanion data) {
+    return DtcCacheData(
+      code: data.code.present ? data.code.value : this.code,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DtcCacheData(')
+          ..write('code: $code, ')
+          ..write('description: $description')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(code, description);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DtcCacheData &&
+          other.code == this.code &&
+          other.description == this.description);
+}
+
+class DtcCacheCompanion extends UpdateCompanion<DtcCacheData> {
+  final Value<String> code;
+  final Value<String> description;
+  final Value<int> rowid;
+  const DtcCacheCompanion({
+    this.code = const Value.absent(),
+    this.description = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  DtcCacheCompanion.insert({
+    required String code,
+    required String description,
+    this.rowid = const Value.absent(),
+  }) : code = Value(code),
+       description = Value(description);
+  static Insertable<DtcCacheData> custom({
+    Expression<String>? code,
+    Expression<String>? description,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (description != null) 'description': description,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  DtcCacheCompanion copyWith({
+    Value<String>? code,
+    Value<String>? description,
+    Value<int>? rowid,
+  }) {
+    return DtcCacheCompanion(
+      code: code ?? this.code,
+      description: description ?? this.description,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DtcCacheCompanion(')
+          ..write('code: $code, ')
+          ..write('description: $description, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $CarsTable cars = $CarsTable(this);
   late final $TripsTable trips = $TripsTable(this);
   late final $TripPointsTable tripPoints = $TripPointsTable(this);
+  late final $DtcCacheTable dtcCache = $DtcCacheTable(this);
   late final CarsDao carsDao = CarsDao(this as AppDatabase);
   late final TripsDao tripsDao = TripsDao(this as AppDatabase);
+  late final DtcDao dtcDao = DtcDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [cars, trips, tripPoints];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+    cars,
+    trips,
+    tripPoints,
+    dtcCache,
+  ];
 }
 
 typedef $$CarsTableCreateCompanionBuilder =
@@ -2945,6 +3172,151 @@ typedef $$TripPointsTableProcessedTableManager =
       TripPoint,
       PrefetchHooks Function({bool tripId})
     >;
+typedef $$DtcCacheTableCreateCompanionBuilder =
+    DtcCacheCompanion Function({
+      required String code,
+      required String description,
+      Value<int> rowid,
+    });
+typedef $$DtcCacheTableUpdateCompanionBuilder =
+    DtcCacheCompanion Function({
+      Value<String> code,
+      Value<String> description,
+      Value<int> rowid,
+    });
+
+class $$DtcCacheTableFilterComposer
+    extends Composer<_$AppDatabase, $DtcCacheTable> {
+  $$DtcCacheTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DtcCacheTableOrderingComposer
+    extends Composer<_$AppDatabase, $DtcCacheTable> {
+  $$DtcCacheTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DtcCacheTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DtcCacheTable> {
+  $$DtcCacheTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+}
+
+class $$DtcCacheTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DtcCacheTable,
+          DtcCacheData,
+          $$DtcCacheTableFilterComposer,
+          $$DtcCacheTableOrderingComposer,
+          $$DtcCacheTableAnnotationComposer,
+          $$DtcCacheTableCreateCompanionBuilder,
+          $$DtcCacheTableUpdateCompanionBuilder,
+          (
+            DtcCacheData,
+            BaseReferences<_$AppDatabase, $DtcCacheTable, DtcCacheData>,
+          ),
+          DtcCacheData,
+          PrefetchHooks Function()
+        > {
+  $$DtcCacheTableTableManager(_$AppDatabase db, $DtcCacheTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DtcCacheTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DtcCacheTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DtcCacheTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> code = const Value.absent(),
+                Value<String> description = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => DtcCacheCompanion(
+                code: code,
+                description: description,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String code,
+                required String description,
+                Value<int> rowid = const Value.absent(),
+              }) => DtcCacheCompanion.insert(
+                code: code,
+                description: description,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DtcCacheTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DtcCacheTable,
+      DtcCacheData,
+      $$DtcCacheTableFilterComposer,
+      $$DtcCacheTableOrderingComposer,
+      $$DtcCacheTableAnnotationComposer,
+      $$DtcCacheTableCreateCompanionBuilder,
+      $$DtcCacheTableUpdateCompanionBuilder,
+      (
+        DtcCacheData,
+        BaseReferences<_$AppDatabase, $DtcCacheTable, DtcCacheData>,
+      ),
+      DtcCacheData,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2954,4 +3326,6 @@ class $AppDatabaseManager {
       $$TripsTableTableManager(_db, _db.trips);
   $$TripPointsTableTableManager get tripPoints =>
       $$TripPointsTableTableManager(_db, _db.tripPoints);
+  $$DtcCacheTableTableManager get dtcCache =>
+      $$DtcCacheTableTableManager(_db, _db.dtcCache);
 }

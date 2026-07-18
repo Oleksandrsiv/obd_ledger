@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../data/database/daos/cars_dao.dart';
 import '../../data/database/database.dart';
-import '../../data/database/daos.dart';
 import '../../services/obd_service/iobd_service.dart';
 
 part 'car_event.dart';

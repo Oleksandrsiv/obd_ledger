@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:developer';
-import '../../data/database/daos.dart';
 import '../../data/database/database.dart';
 import '../../data/models/realtime_data_model.dart';
+import '../data/database/daos/trips_dao.dart';
 import 'obd_service/iobd_service.dart';
 
 

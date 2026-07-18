@@ -1,6 +1,6 @@
 import 'dart:developer';
 import 'package:drift/drift.dart';
-import '../data/database/daos.dart';
+import '../data/database/daos/cars_dao.dart';
 import 'nhtsa_api/nhtsa_api_client.dart';
 
 class VehicleInfoRepository {
