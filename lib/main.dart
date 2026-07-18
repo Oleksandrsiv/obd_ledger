@@ -1,29 +1,36 @@
 import 'package:flutter/material.dart';
-import 'service_locator.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:obd_ledger/screens/garage_screen/garage_screen.dart';
+import 'package:obd_ledger/service_locator.dart';
+import 'package:obd_ledger/theme/theme_cubit.dart';
+import 'blocs/car/car_bloc.dart';
 
 void main() async {
-  // Обов'язковий рядок, якщо ми робимо асинхронні виклики перед runApp
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Ініціалізуємо наші сервіси
-  setupLocator();
+  await setupLocator();
 
-  runApp(const MyApp());
+  runApp(const ObdLedgerApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class ObdLedgerApp extends StatelessWidget {
+  const ObdLedgerApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'OBD Ledger',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const Scaffold(
-        body: Center(child: Text('OBD Ledger Ready')),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => getIt<ThemeCubit>()),
+        BlocProvider(create: (_) => getIt<CarBloc>()..add(LoadCars())),
+      ],
+      child: BlocBuilder<ThemeCubit, ThemeData>(
+        builder: (context, themeData) {
+          return MaterialApp(
+            title: 'OBD Ledger',
+            theme: themeData,
+            home: const GarageScreen(),
+          );
+        },
       ),
     );
   }

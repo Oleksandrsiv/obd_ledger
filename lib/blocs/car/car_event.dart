@@ -13,3 +13,10 @@ class SelectCar extends CarEvent {
 
 /// Called every time OBD successfully connects.
 class SyncMileage extends CarEvent {}
+
+class AddCar extends CarEvent {
+  final String vin;
+  final int initialMileage;
+
+  AddCar(this.vin, this.initialMileage);
+}
