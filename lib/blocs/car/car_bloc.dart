@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/database/daos/cars_dao.dart';
 import '../../data/database/database.dart';
 import '../../services/obd_service/iobd_service.dart';
+import 'package:drift/drift.dart' as drift;
+import '../../services/vehicle_info_repository.dart';
 
 part 'car_event.dart';
 part 'car_state.dart';
@@ -9,11 +11,13 @@ part 'car_state.dart';
 class CarBloc extends Bloc<CarEvent, CarState> {
   final CarsDao _carsDao;
   final IObdScanner _obdScanner;
+  final VehicleInfoRepository _vehicleInfoRepository;
 
-  CarBloc(this._carsDao, this._obdScanner) : super(const CarState()) {
+  CarBloc(this._carsDao, this._obdScanner, this._vehicleInfoRepository) : super(const CarState()) {
     on<LoadCars>(_onLoadCars);
     on<SelectCar>(_onSelectCar);
     on<SyncMileage>(_onSyncMileage);
+    on<ProcessScannedVin>(_onProcessScannedVin);
   }
 
   Future<void> _onLoadCars(LoadCars event, Emitter<CarState> emit) async {
@@ -94,6 +98,45 @@ class CarBloc extends Bloc<CarEvent, CarState> {
       emit(state.copyWith(
         errorMessage: "Error syncing mileage: $e",
         isSyncing: false,
+      ));
+    }
+  }
+
+  Future<void> _onProcessScannedVin(ProcessScannedVin event, Emitter<CarState> emit) async {
+    emit(state.copyWith(isLoading: true));
+
+    try {
+      // Перевіряємо, чи є вже така машина в базі
+      Car? existingCar = await _carsDao.getCarByVin(event.vin);
+
+      if (existingCar == null) {
+        // Якщо машини немає - запитуємо назву через API
+        final carName = await _vehicleInfoRepository.getCarName(event.vin)
+            ?? "New Car (${event.vin.substring(event.vin.length - 4)})";
+
+        // Створюємо новий запис в БД
+        final newCarCompanion = CarsCompanion.insert(
+          vin: event.vin,
+          name: drift.Value(carName),
+        );
+        await _carsDao.insertOrUpdateCar(newCarCompanion);
+
+        // Витягуємо щойно створену машину з БД, щоб отримати її згенерований ID
+        existingCar = await _carsDao.getCarByVin(event.vin);
+      }
+
+      // Оновлюємо список гаража та робимо цю машину активною
+      final allCars = await _carsDao.getAllCars();
+      emit(state.copyWith(
+        carsList: allCars,
+        activeCar: existingCar,
+        isLoading: false,
+      ));
+
+    } catch (e) {
+      emit(state.copyWith(
+          errorMessage: "Error processing VIN: $e",
+          isLoading: false
       ));
     }
   }

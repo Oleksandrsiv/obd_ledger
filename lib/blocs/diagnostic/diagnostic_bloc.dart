@@ -28,7 +28,7 @@ class DiagnosticBloc extends Bloc<DiagnosticEvent, DiagnosticState> {
     } catch (e) {
       emit(state.copyWith(
         isLoading: false,
-        errorMessage: "Не вдалося зчитати помилки: $e",
+        errorMessage: "Failed to read errors: $e",
       ));
     }
   }

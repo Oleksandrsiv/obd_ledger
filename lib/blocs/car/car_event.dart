@@ -20,3 +20,9 @@ class AddCar extends CarEvent {
 
   AddCar(this.vin, this.initialMileage);
 }
+
+class ProcessScannedVin extends CarEvent {
+  final String vin;
+
+  ProcessScannedVin(this.vin);
+}

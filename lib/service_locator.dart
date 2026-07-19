@@ -21,38 +21,37 @@ Future<void> setupLocator() async {
   final prefs = await SharedPreferences.getInstance();
   getIt.registerSingleton<SharedPreferences>(prefs);
 
-  // register themes
-  getIt.registerFactory<ThemeCubit>(() => ThemeCubit(getIt<SharedPreferences>()));
-
-  // register DB
+  // Core Services & DB
   getIt.registerLazySingleton<AppDatabase>(() => AppDatabase());
+  getIt.registerLazySingleton<NhtsaApiClient>(() => NhtsaApiClient());
+  getIt.registerLazySingleton<IObdScanner>(() => ObdService());
 
+  // DAOs
+  getIt.registerLazySingleton<CarsDao>(() => CarsDao(getIt<AppDatabase>()));
+  getIt.registerLazySingleton<TripsDao>(() => TripsDao(getIt<AppDatabase>()));
+  getIt.registerLazySingleton<DtcDao>(() => DtcDao(getIt<AppDatabase>()));
+
+  // Repositories
   getIt.registerLazySingleton<VehicleInfoRepository>(
           () => VehicleInfoRepository(getIt<CarsDao>(), getIt<NhtsaApiClient>())
   );
-
-  // register API
-  getIt.registerLazySingleton<NhtsaApiClient>(() => NhtsaApiClient());
-
-  // register DAOs
-  getIt.registerLazySingleton<CarsDao>(() => CarsDao(getIt<AppDatabase>()));
-  getIt.registerLazySingleton<TripsDao>(() => TripsDao(getIt<AppDatabase>()));
-
-  // register OBD service
-  getIt.registerLazySingleton<IObdScanner>(() => ObdService());
-
-  // register repository
   getIt.registerLazySingleton<DtcRepository>(
           () => DtcRepository(getIt<IObdScanner>(), getIt<DtcDao>())
+  );
+
+  // Blocs / Cubits
+  getIt.registerFactory<ThemeCubit>(
+          () => ThemeCubit(getIt<SharedPreferences>())
   );
 
   getIt.registerFactory<DiagnosticBloc>(
           () => DiagnosticBloc(getIt<DtcRepository>())
   );
 
-  getIt.registerFactory<CarBloc>(() => CarBloc(getIt(), getIt()));
+  getIt.registerFactory<CarBloc>(
+          () => CarBloc(getIt(), getIt(), getIt())
+  );
 
-  // Bluetooth
   getIt.registerFactory<BluetoothCubit>(
           () => BluetoothCubit(getIt<SharedPreferences>(), getIt<IObdScanner>())
   );

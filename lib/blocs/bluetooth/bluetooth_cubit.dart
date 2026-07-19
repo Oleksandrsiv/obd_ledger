@@ -13,6 +13,7 @@ class BluetoothState {
   final bool isLoading;
   final String? errorMessage;
   final ObdConnectionState connectionStatus;
+  final String? connectedVin;
 
   BluetoothState({
     this.bondedDevices = const [],
@@ -20,6 +21,7 @@ class BluetoothState {
     this.isLoading = false,
     this.errorMessage,
     this.connectionStatus = ObdConnectionState.disconnected,
+    this.connectedVin,
   });
 
   BluetoothState copyWith({
@@ -29,6 +31,8 @@ class BluetoothState {
     String? errorMessage,
     ObdConnectionState? connectionStatus,
     bool clearError = false,
+    String? connectedVin,
+    bool clearVin = false,
   }) {
     return BluetoothState(
       bondedDevices: bondedDevices ?? this.bondedDevices,
@@ -36,6 +40,7 @@ class BluetoothState {
       isLoading: isLoading ?? this.isLoading,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       connectionStatus: connectionStatus ?? this.connectionStatus,
+      connectedVin: clearVin ? null : (connectedVin ?? this.connectedVin),
     );
   }
 }
@@ -132,6 +137,7 @@ class BluetoothCubit extends Cubit<BluetoothState> {
     emit(state.copyWith(
       connectionStatus: ObdConnectionState.connecting,
       clearError: true,
+      clearVin: true,
     ));
 
     final success = await _obdScanner.connect(macAddress);
@@ -142,6 +148,15 @@ class BluetoothCubit extends Cubit<BluetoothState> {
       ));
     } else {
       emit(state.copyWith(clearError: true));
+
+      try {
+        final vin = await _obdScanner.readVin();
+        if (vin.isNotEmpty) {
+          emit(state.copyWith(connectedVin: vin));
+        }
+      } catch (e) {
+        emit(state.copyWith(errorMessage: 'Connected, but failed to read VIN'));
+      }
     }
   }
 
