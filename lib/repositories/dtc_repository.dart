@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'package:flutter/services.dart';
 import '../data/database/daos/dtc_dao.dart';
 import '../data/models/diagnostic_code.dart';
-import 'obd_service/iobd_service.dart';
+import '../services/obd_service/iobd_service.dart';
 
 class DtcRepository {
   final IObdScanner _obdScanner;
@@ -67,6 +67,10 @@ class DtcRepository {
       log("Error loading error dictionary: $e");
       _standardDtcMap = {};
     }
+  }
+
+  Future<bool> clearTroubleCodes() async {
+    return await _obdScanner.clearTroubleCodes();
   }
 
 

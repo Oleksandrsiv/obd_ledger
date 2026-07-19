@@ -7,3 +7,5 @@ class LoadTroubleCodes extends DiagnosticEvent {
 
   LoadTroubleCodes(this.make);
 }
+
+class ClearTroubleCodes extends DiagnosticEvent {}

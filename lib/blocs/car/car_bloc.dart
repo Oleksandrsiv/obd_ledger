@@ -3,7 +3,7 @@ import '../../data/database/daos/cars_dao.dart';
 import '../../data/database/database.dart';
 import '../../services/obd_service/iobd_service.dart';
 import 'package:drift/drift.dart' as drift;
-import '../../services/vehicle_info_repository.dart';
+import '../../repositories/vehicle_info_repository.dart';
 
 part 'car_event.dart';
 part 'car_state.dart';

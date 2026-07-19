@@ -4,7 +4,7 @@ import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart' hide Blu
 import '../../blocs/bluetooth/bluetooth_cubit.dart';
 //import '../../services/obd_service/iobd_service.dart';
 import 'package:obd_ledger/services/obd_service/iobd_service.dart';
-import '../../theme/app_them.dart';
+import '../../theme/app_theme.dart';
 import '../../theme/theme_cubit.dart';
 
 class SettingsScreen extends StatelessWidget {

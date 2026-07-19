@@ -1,10 +1,12 @@
 import 'package:get_it/get_it.dart';
-import 'package:obd_ledger/services/dtc_repository.dart';
+import 'package:obd_ledger/repositories/dtc_repository.dart';
 import 'package:obd_ledger/services/nhtsa_api/nhtsa_api_client.dart';
-import 'package:obd_ledger/services/vehicle_info_repository.dart';
+import 'package:obd_ledger/repositories/vehicle_info_repository.dart';
+import 'package:obd_ledger/services/trip_recording_service.dart';
 import 'package:obd_ledger/theme/theme_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'blocs/bluetooth/bluetooth_cubit.dart';
+import 'blocs/dashboards/dashboard_bloc.dart';
 import 'blocs/diagnostic/diagnostic_bloc.dart';
 import 'data/database/daos/cars_dao.dart';
 import 'data/database/daos/dtc_dao.dart';
@@ -55,4 +57,16 @@ Future<void> setupLocator() async {
   getIt.registerFactory<BluetoothCubit>(
           () => BluetoothCubit(getIt<SharedPreferences>(), getIt<IObdScanner>())
   );
+
+  if (!getIt.isRegistered<TripRecordingService>()) {
+    getIt.registerLazySingleton<TripRecordingService>(
+          () => TripRecordingService(getIt(), getIt()),
+    );
+  }
+
+  if (!getIt.isRegistered<DashboardBloc>()) {
+    getIt.registerFactory<DashboardBloc>(
+          () => DashboardBloc(getIt<TripRecordingService>()),
+    );
+  }
 }

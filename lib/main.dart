@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:obd_ledger/screens/garage_screen/garage_screen.dart';
+import 'package:obd_ledger/screens/live_dashboard/car_details_screen.dart';
+import 'package:obd_ledger/screens/live_dashboard/live_dashboard.dart';
 import 'package:obd_ledger/service_locator.dart';
 import 'package:obd_ledger/theme/theme_cubit.dart';
 import 'blocs/bluetooth/bluetooth_cubit.dart';
 import 'blocs/car/car_bloc.dart';
+import 'blocs/diagnostic/diagnostic_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +34,12 @@ class ObdLedgerApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             title: 'OBD Ledger',
             theme: themeData,
-            home: const GarageScreen(),
+            //home: const GarageScreen(),
+            home: const CarDetailsScreen(
+              carId: 1, // Тимчасовий ID для бази
+              carMake: 'Subaru',
+              carName: 'My Forester OBD',
+            ),
           );
         },
       ),

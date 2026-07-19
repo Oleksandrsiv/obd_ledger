@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:obd_ledger/screens/garage_screen/widgets/car_card_widget.dart';
 import 'package:obd_ledger/screens/garage_screen/widgets/connection_status_light.dart';
-import 'package:obd_ledger/screens/garage_screen/widgets/emty_garage_widget.dart';
+import 'package:obd_ledger/screens/garage_screen/widgets/empty_garage_widget.dart';
 import '../../blocs/bluetooth/bluetooth_cubit.dart';
 import '../../blocs/car/car_bloc.dart';
-import '../seting_screen/seting_screen.dart';
+import '../settings_screen/seting_screen.dart';
 
 class GarageScreen extends StatelessWidget {
   const GarageScreen({super.key});

@@ -9,8 +9,14 @@ class DashboardConnectionChanged extends DashboardEvent {
   DashboardConnectionChanged(this.status);
 }
 
-class DashboardStartPolling extends DashboardEvent {}
+class DashboardStartPolling extends DashboardEvent {
+  final int carId;
+  DashboardStartPolling(this.carId);
+}
 
 class DashboardStopPolling extends DashboardEvent {}
 
-class _DashboardPollingTick extends DashboardEvent {}
+class _DashboardDataReceived extends DashboardEvent {
+  final RealtimeData data;
+  _DashboardDataReceived(this.data);
+}
