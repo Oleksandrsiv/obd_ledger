@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:obd_ledger/screens/garage_screen/widgets/add_car_dialog_widget.dart';
 import 'package:obd_ledger/screens/garage_screen/widgets/car_card_widget.dart';
+import 'package:obd_ledger/screens/garage_screen/widgets/connection_status_light.dart';
 import 'package:obd_ledger/screens/garage_screen/widgets/emty_garage_widget.dart';
 import '../../blocs/car/car_bloc.dart';
 import '../seting_screen/seting_screen.dart';
@@ -15,6 +15,8 @@ class GarageScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('My Garage'),
         actions: [
+          const Center(child: ConnectionStatusLight()),
+
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
@@ -26,14 +28,6 @@ class GarageScreen extends StatelessWidget {
             tooltip: 'Settings',
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => showDialog(
-          context: context,
-          builder: (_) => const AddCarDialog(),
-        ),
-        icon: const Icon(Icons.directions_car),
-        label: const Text('Add Car'),
       ),
       body: BlocBuilder<CarBloc, CarState>(
         builder: (context, state) {

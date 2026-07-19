@@ -4,6 +4,7 @@ import 'package:obd_ledger/services/nhtsa_api/nhtsa_api_client.dart';
 import 'package:obd_ledger/services/vehicle_info_repository.dart';
 import 'package:obd_ledger/theme/theme_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'blocs/bluetooth/bluetooth_cubit.dart';
 import 'blocs/diagnostic/diagnostic_bloc.dart';
 import 'data/database/daos/cars_dao.dart';
 import 'data/database/daos/dtc_dao.dart';
@@ -50,4 +51,9 @@ Future<void> setupLocator() async {
   );
 
   getIt.registerFactory<CarBloc>(() => CarBloc(getIt(), getIt()));
+
+  // Bluetooth
+  getIt.registerFactory<BluetoothCubit>(
+          () => BluetoothCubit(getIt<SharedPreferences>(), getIt<IObdScanner>())
+  );
 }

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart' hide BluetoothState;
+import '../../blocs/bluetooth/bluetooth_cubit.dart';
+//import '../../services/obd_service/iobd_service.dart';
+import 'package:obd_ledger/services/obd_service/iobd_service.dart';
 import '../../theme/app_them.dart';
 import '../../theme/theme_cubit.dart';
 
@@ -42,19 +46,14 @@ class SettingsScreen extends StatelessWidget {
           const Divider(height: 48),
 
           const Text(
-            'about app',
+            'OBD Adapter',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 16),
-          ListTile(
-            leading: const Icon(Icons.info_outline),
-            title: const Text('version OBD Ledger'),
-            subtitle: const Text('1.0.0 (Beta)'),
-            onTap: () {},
-          ),
+          _ObdAdapterSelector(),
         ],
       ),
     );
@@ -113,6 +112,114 @@ class _ThemeOptionTile extends StatelessWidget {
           context.read<ThemeCubit>().changeTheme(themeType);
         },
       ),
+    );
+  }
+}
+
+class _ObdAdapterSelector extends StatelessWidget {
+  const _ObdAdapterSelector();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<BluetoothCubit, BluetoothState>(
+      builder: (context, state) {
+        if (state.isLoading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (state.bondedDevices.isEmpty) {
+          return const Text(
+            'No paired devices found. Please pair an OBD adapter in your phone\'s Bluetooth settings first.',
+            style: TextStyle(color: Colors.grey),
+          );
+        }
+
+        final isConnected = state.connectionStatus == ObdConnectionState.connected;
+        final isConnecting = state.connectionStatus == ObdConnectionState.connecting;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.withOpacity(0.5)),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: state.selectedMacAddress,
+                  hint: const Text('Select OBD adapter'),
+                  items: state.bondedDevices.map((device) {
+                    return DropdownMenuItem<String>(
+                      value: device.address,
+                      child: Text(device.name ?? device.address),
+                    );
+                  }).toList(),
+                  // Block changing the device while establishing a connection
+                  onChanged: isConnecting ? null : (newMac) {
+                    if (newMac != null) {
+                      context.read<BluetoothCubit>().selectDevice(newMac);
+                    }
+                  },
+                ),
+              ),
+            ),
+
+            // error bloc
+            if (state.errorMessage != null) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error, size: 16),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      state.errorMessage!,
+                      style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+
+            // btn (Connect / Disconnect)
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: isConnecting
+                  ? null // Block btn while establishing a connection
+                  : () {
+                if (isConnected) {
+                  context.read<BluetoothCubit>().disconnect();
+                } else if (state.selectedMacAddress != null) {
+                  context.read<BluetoothCubit>().connectToDevice(state.selectedMacAddress!);
+                }
+              },
+              icon: isConnecting
+                  ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+                  : Icon(isConnected ? Icons.bluetooth_disabled : Icons.bluetooth_connected),
+              label: Text(
+                isConnecting
+                    ? 'Connecting...'
+                    : (isConnected ? 'Disconnect' : 'Connect'),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isConnected
+                    ? Theme.of(context).colorScheme.errorContainer
+                    : null,
+                foregroundColor: isConnected
+                    ? Theme.of(context).colorScheme.onErrorContainer
+                    : null,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

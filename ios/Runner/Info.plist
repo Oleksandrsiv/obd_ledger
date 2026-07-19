@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <!-- Bluetooth permission -->
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>We need Bluetooth access to connect to your OBD2 adapter and read vehicle data.</string>
+
+    <!-- For backward compatibility with older versions of iOS -->
+    <key>NSBluetoothPeripheralUsageDescription</key>
+    <string>We need Bluetooth access to connect to your OBD2 adapter.</string>
+
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
