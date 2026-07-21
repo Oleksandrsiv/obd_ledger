@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../blocs/car/car_bloc.dart';
+import '../../car_details/car_details_screen.dart';
 
 class CarCard extends StatelessWidget {
   final dynamic car;
@@ -77,6 +78,18 @@ class CarCard extends StatelessWidget {
         ),
         onTap: () {
           context.read<CarBloc>().add(SelectCar(car.id));
+
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => CarDetailsScreen(
+                carId: car.id,
+                carMake: car.name ?? 'Unknown',
+                carName: car.name ?? 'My Car',
+                currentMileage: car.savedTotalDistance,
+              ),
+            ),
+          );
         },
       ),
     );

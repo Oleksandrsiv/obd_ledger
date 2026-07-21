@@ -1,10 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:obd_ledger/screens/live_dashboard/widgets/dash_board_body.dart';
-import 'package:obd_ledger/screens/live_dashboard/widgets/diagnostic_banner.dart';
+import 'package:obd_ledger/screens/car_details/tabs/live_dashboard/widgets/dash_board_body.dart';
+import 'package:obd_ledger/screens/car_details/tabs/live_dashboard/widgets/diagnostic_banner.dart';
 
-import '../../blocs/diagnostic/diagnostic_bloc.dart';
-
+import '../../../../blocs/diagnostic/diagnostic_bloc.dart';
 class LiveDashboardTab extends StatefulWidget {
   final String carMake;
 

@@ -11,4 +11,7 @@ class TripPoints extends Table {
   IntColumn get rpm => integer()();
   IntColumn get throttlePosition => integer()();
   IntColumn get engineTemp => integer()();
+
+  RealColumn get latitude => real().nullable()();
+  RealColumn get longitude => real().nullable()();
 }

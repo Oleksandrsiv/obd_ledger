@@ -29,7 +29,7 @@ class DashboardState {
       connectionStatus: connectionStatus ?? this.connectionStatus,
       realtimeData: realtimeData ?? this.realtimeData,
       isPolling: isPolling ?? this.isPolling,
-      errorMessage: errorMessage, // Дозволяємо скидати помилку в null
+      errorMessage: errorMessage, // Allows the error message to be set to null
     );
   }
 }

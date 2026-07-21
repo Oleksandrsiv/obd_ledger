@@ -22,13 +22,16 @@ class TripRecordingService {
   final _dataController = StreamController<RealtimeData>.broadcast();
   Stream<RealtimeData> get realtimeDataStream => _dataController.stream;
 
+  final _tripStatusController = StreamController<bool>.broadcast();
+  Stream<bool> get isTripActiveStream => _tripStatusController.stream;
+
   TripRecordingService(this._obdScanner, this._tripsDao);
 
   void startPolling(int carId) {
-    _activeCarId = carId; // Зберігаємо ID авто на майбутнє
+    _activeCarId = carId; 
     if (_pollingTimer != null) return;
 
-    // Запускаємо періодичний таймер для UI
+    // Start periodic timer for UI
     _pollingTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       _onTick();
     });
@@ -40,10 +43,9 @@ class TripRecordingService {
   }
 
   Future<void> startRecordingToDatabase() async {
-    // Не починаємо запис, якщо вже пишемо або не знаємо carId
     if (_currentTripId != null || _activeCarId == null) return;
 
-    // Створюємо нову сесію поїздки в базі
+    // Create a new trip session in the database
     _currentTripId = await _tripsDao.startTrip(TripsCompanion.insert(
       carId: _activeCarId!,
       startTimestamp: DateTime.now().millisecondsSinceEpoch,
@@ -57,7 +59,6 @@ class TripRecordingService {
     await _flushBatch();
 
     if (_currentTripId != null) {
-      // Закриваємо сесію поїздки
       await _tripsDao.updateTripFields(
         _currentTripId!,
         DateTime.now().millisecondsSinceEpoch,
@@ -69,14 +70,12 @@ class TripRecordingService {
 
   Future<void> _onTick() async {
     try {
-      // Читаємо дані
       int currentRpm = await _obdScanner.readEngineRpm();
       int currentSpeed = await _obdScanner.readVehicleSpeed();
       int currentTemp = await _obdScanner.readCoolantTemp();
       int currentLoad = await _obdScanner.readEngineLoad();
       int currentThrottle = await _obdScanner.readThrottlePosition();
 
-      // Пакуємо дані у модель
       final currentData = RealtimeData(
         speed: currentSpeed,
         rpm: currentRpm,
@@ -86,11 +85,19 @@ class TripRecordingService {
         timestamp: DateTime.now(),
       );
 
-      // ЗАВЖДИ відправляємо дані в UI (стрім)
       _dataController.add(currentData);
 
-      // ЗАПИСУЄМО В БАЗУ ТІЛЬКИ ЯКЩО TripId != null (заведено двигун)
+      // RECORD TO DATABASE ONLY IF TripId != null (engine started)
       if (_currentTripId != null) {
+
+        if (currentData.rpm == 0) {
+          log("Engine stopped (RPM = 0). Finishing trip...");
+          await stopRecordingToDatabase();
+          _tripStatusController.add(false); // end of trip
+          return; // finish and don`t save the last point
+        }
+
+
         if (_shouldSavePoint(currentData)) {
           _pointsBatch.add(TripPointsCompanion.insert(
             tripId: _currentTripId!,
@@ -103,7 +110,7 @@ class TripRecordingService {
 
           _lastSavedPoint = currentData;
 
-          // Зберігаємо пачку в базу, якщо вона заповнилась
+          // Save the batch to the database if it's full
           if (_pointsBatch.length >= _batchSizeLimit) {
             await _flushBatch();
           }
@@ -114,7 +121,6 @@ class TripRecordingService {
     }
   }
 
-  // Логіка проріджування залишається без змін
   bool _shouldSavePoint(RealtimeData current) {
     if (_lastSavedPoint == null) return true;
 
@@ -129,7 +135,6 @@ class TripRecordingService {
     return false;
   }
 
-  // Пакетний запис залишається без змін
   Future<void> _flushBatch() async {
     if (_pointsBatch.isEmpty) return;
 

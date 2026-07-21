@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../services/obd_service/iobd_service.dart';
 import '../../services/trip_recording_service.dart';
 import '../../data/models/realtime_data_model.dart';
+import '../car/car_bloc.dart';
 
 part 'dashboard_event.dart';
 part 'dashboard_state.dart';

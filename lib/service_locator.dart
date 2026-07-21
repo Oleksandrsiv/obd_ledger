@@ -8,8 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'blocs/bluetooth/bluetooth_cubit.dart';
 import 'blocs/dashboards/dashboard_bloc.dart';
 import 'blocs/diagnostic/diagnostic_bloc.dart';
+import 'blocs/maintenance/maintenance_bloc.dart';
 import 'data/database/daos/cars_dao.dart';
 import 'data/database/daos/dtc_dao.dart';
+import 'data/database/daos/maintenance_tasks_dao.dart';
 import 'data/database/daos/trips_dao.dart';
 import 'data/database/database.dart';
 import 'services/obd_service/iobd_service.dart';
@@ -25,13 +27,37 @@ Future<void> setupLocator() async {
 
   // Core Services & DB
   getIt.registerLazySingleton<AppDatabase>(() => AppDatabase());
+
+  if (!getIt.isRegistered<AppDatabase>()) {
+    getIt.registerLazySingleton<AppDatabase>(() => AppDatabase());
+  }
+
   getIt.registerLazySingleton<NhtsaApiClient>(() => NhtsaApiClient());
+
   getIt.registerLazySingleton<IObdScanner>(() => ObdService());
+
+  if (!getIt.isRegistered<TripRecordingService>()) {
+    getIt.registerLazySingleton<TripRecordingService>(
+          () => TripRecordingService(getIt(), getIt()),
+    );
+  }
+
 
   // DAOs
   getIt.registerLazySingleton<CarsDao>(() => CarsDao(getIt<AppDatabase>()));
   getIt.registerLazySingleton<TripsDao>(() => TripsDao(getIt<AppDatabase>()));
   getIt.registerLazySingleton<DtcDao>(() => DtcDao(getIt<AppDatabase>()));
+  if (!getIt.isRegistered<MaintenanceTasksDao>()) {
+    getIt.registerLazySingleton<MaintenanceTasksDao>(
+          () => MaintenanceTasksDao(getIt<AppDatabase>()),
+    );
+  }
+
+  if (!getIt.isRegistered<CarsDao>()) {
+    getIt.registerLazySingleton<CarsDao>(
+          () => CarsDao(getIt<AppDatabase>()),
+    );
+  }
 
   // Repositories
   getIt.registerLazySingleton<VehicleInfoRepository>(
@@ -51,22 +77,22 @@ Future<void> setupLocator() async {
   );
 
   getIt.registerFactory<CarBloc>(
-          () => CarBloc(getIt(), getIt(), getIt())
+          () => CarBloc(getIt(), getIt(), getIt(),getIt())
   );
 
   getIt.registerFactory<BluetoothCubit>(
           () => BluetoothCubit(getIt<SharedPreferences>(), getIt<IObdScanner>())
   );
 
-  if (!getIt.isRegistered<TripRecordingService>()) {
-    getIt.registerLazySingleton<TripRecordingService>(
-          () => TripRecordingService(getIt(), getIt()),
-    );
-  }
-
   if (!getIt.isRegistered<DashboardBloc>()) {
     getIt.registerFactory<DashboardBloc>(
           () => DashboardBloc(getIt<TripRecordingService>()),
+    );
+  }
+
+  if (!getIt.isRegistered<MaintenanceBloc>()) {
+    getIt.registerFactory<MaintenanceBloc>(
+          () => MaintenanceBloc(getIt<MaintenanceTasksDao>()),
     );
   }
 }

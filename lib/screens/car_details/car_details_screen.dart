@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:obd_ledger/blocs/diagnostic/diagnostic_bloc.dart';
+import 'package:obd_ledger/screens/car_details/tabs/live_dashboard/live_dashboard.dart';
 import 'package:obd_ledger/service_locator.dart';
 
 import '../../blocs/dashboards/dashboard_bloc.dart';
-import 'live_dashboard.dart';
+import '../../blocs/maintenance/maintenance_bloc.dart';
+import 'tabs/service_tab/service_tab.dart';
 
 class CarDetailsScreen extends StatefulWidget {
   final int carId;
   final String carMake;
   final String carName;
+  final int currentMileage;
 
   const CarDetailsScreen({
     super.key,
     required this.carId,
     required this.carMake,
     required this.carName,
+    required this.currentMileage,
   });
 
   @override
@@ -33,6 +37,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
         BlocProvider(
           create: (context) => getIt<DashboardBloc>()..add(DashboardStartPolling(widget.carId)),
         ),
+        BlocProvider(create: (context) => getIt<MaintenanceBloc>()),
       ],
       child: Scaffold(
         appBar: AppBar(
@@ -47,7 +52,11 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
         body: IndexedStack(
           index: _currentIndex,
           children: [
-            const Center(child: Text('Maintenance Schedule', style: TextStyle(fontSize: 20))),
+            ServiceTab(
+              carMake: widget.carMake,
+              currentMileage: widget.currentMileage,
+              carId: widget.carId,
+            ),
             LiveDashboardTab(carMake: widget.carMake),
             const Center(child: Text('Trip Analytics', style: TextStyle(fontSize: 20))),
           ],

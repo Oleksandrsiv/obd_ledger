@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../blocs/dashboards/dashboard_bloc.dart';
+import '../../../../../blocs/dashboards/dashboard_bloc.dart';
 import 'mini_stat_card.dart';
 
 class StatsSection extends StatelessWidget {

@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/database/daos/cars_dao.dart';
 import '../../data/database/database.dart';
 import '../../services/obd_service/iobd_service.dart';
 import 'package:drift/drift.dart' as drift;
 import '../../repositories/vehicle_info_repository.dart';
+import '../../services/trip_recording_service.dart';
 
 part 'car_event.dart';
 part 'car_state.dart';
@@ -12,13 +15,29 @@ class CarBloc extends Bloc<CarEvent, CarState> {
   final CarsDao _carsDao;
   final IObdScanner _obdScanner;
   final VehicleInfoRepository _vehicleInfoRepository;
+  final TripRecordingService _tripRecordingService;
 
-  CarBloc(this._carsDao, this._obdScanner, this._vehicleInfoRepository) : super(const CarState()) {
+  StreamSubscription<bool>? _tripStatusSubscription;
+
+  CarBloc(this._carsDao, this._obdScanner, this._vehicleInfoRepository, this._tripRecordingService) : super(const CarState()) {
     on<LoadCars>(_onLoadCars);
     on<SelectCar>(_onSelectCar);
     on<SyncMileage>(_onSyncMileage);
     on<ProcessScannedVin>(_onProcessScannedVin);
+
+    _tripStatusSubscription = _tripRecordingService.isTripActiveStream.listen((isTripActive) {
+      if (!isTripActive) {
+        add(SyncMileage());
+      }
+    });
   }
+
+  @override
+  Future<void> close() {
+    _tripStatusSubscription?.cancel();
+    return super.close();
+  }
+
 
   Future<void> _onLoadCars(LoadCars event, Emitter<CarState> emit) async {
     emit(state.copyWith(isLoading: true));
@@ -62,11 +81,11 @@ class CarBloc extends Bloc<CarEvent, CarState> {
       int savedTotalDistance = car.savedTotalDistance ?? 0;
       int lastObdReading = car.lastObdReading ?? 0;
       bool accuracyWarning = car.isAccuracyWarning ?? false;
-
       int newTotalDistance = savedTotalDistance;
 
       // CHECKING LOGIC
-      if (currentObdDistance >= lastObdReading) {
+      if (lastObdReading == 0) {// First connection. Take the reference point, but don't add to mileage
+      } else if (currentObdDistance >= lastObdReading) {
         // 1) Normal trip. Add only the difference.
         int delta = currentObdDistance - lastObdReading;
         newTotalDistance += delta;
@@ -106,26 +125,30 @@ class CarBloc extends Bloc<CarEvent, CarState> {
     emit(state.copyWith(isLoading: true));
 
     try {
-      // Перевіряємо, чи є вже така машина в базі
-      Car? existingCar = await _carsDao.getCarByVin(event.vin);
+      // clear VIN from trash
+      String cleanVin = event.vin.replaceAll(RegExp(r'[^A-HJ-NPR-Z0-9]'), '');
+      if (cleanVin.length >= 17) {
+        cleanVin = cleanVin.substring(cleanVin.length - 17);
+      } else if (cleanVin.isEmpty) {
+        cleanVin = "UNKNOWN_VIN";
+      }
+
+      Car? existingCar = await _carsDao.getCarByVin(cleanVin);
 
       if (existingCar == null) {
-        // Якщо машини немає - запитуємо назву через API
-        final carName = await _vehicleInfoRepository.getCarName(event.vin)
-            ?? "New Car (${event.vin.substring(event.vin.length - 4)})";
+        final carName = await _vehicleInfoRepository.getCarName(cleanVin)
+            ?? "New Car (${cleanVin.substring(cleanVin.length - 4)})";
 
-        // Створюємо новий запис в БД
         final newCarCompanion = CarsCompanion.insert(
-          vin: event.vin,
+          vin: cleanVin,
           name: drift.Value(carName),
         );
         await _carsDao.insertOrUpdateCar(newCarCompanion);
 
-        // Витягуємо щойно створену машину з БД, щоб отримати її згенерований ID
-        existingCar = await _carsDao.getCarByVin(event.vin);
+        existingCar = await _carsDao.getCarByVin(cleanVin);
       }
 
-      // Оновлюємо список гаража та робимо цю машину активною
+      // Update the list of garage and make this car active
       final allCars = await _carsDao.getAllCars();
       emit(state.copyWith(
         carsList: allCars,

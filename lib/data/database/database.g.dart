@@ -78,73 +78,6 @@ class $CarsTable extends Cars with TableInfo<$CarsTable, Car> {
     ),
     defaultValue: const Constant(false),
   );
-  static const VerificationMeta _oilIntervalMeta = const VerificationMeta(
-    'oilInterval',
-  );
-  @override
-  late final GeneratedColumn<int> oilInterval = GeneratedColumn<int>(
-    'oil_interval',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _oilLastChangeDistanceMeta =
-      const VerificationMeta('oilLastChangeDistance');
-  @override
-  late final GeneratedColumn<int> oilLastChangeDistance = GeneratedColumn<int>(
-    'oil_last_change_distance',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0),
-  );
-  static const VerificationMeta _airFilterIntervalMeta = const VerificationMeta(
-    'airFilterInterval',
-  );
-  @override
-  late final GeneratedColumn<int> airFilterInterval = GeneratedColumn<int>(
-    'air_filter_interval',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _airFilterLastChangeDistanceMeta =
-      const VerificationMeta('airFilterLastChangeDistance');
-  @override
-  late final GeneratedColumn<int> airFilterLastChangeDistance =
-      GeneratedColumn<int>(
-        'air_filter_last_change_distance',
-        aliasedName,
-        false,
-        type: DriftSqlType.int,
-        requiredDuringInsert: false,
-        defaultValue: const Constant(0),
-      );
-  static const VerificationMeta _cabinFilterIntervalMeta =
-      const VerificationMeta('cabinFilterInterval');
-  @override
-  late final GeneratedColumn<int> cabinFilterInterval = GeneratedColumn<int>(
-    'cabin_filter_interval',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _cabinFilterLastChangeDistanceMeta =
-      const VerificationMeta('cabinFilterLastChangeDistance');
-  @override
-  late final GeneratedColumn<int> cabinFilterLastChangeDistance =
-      GeneratedColumn<int>(
-        'cabin_filter_last_change_distance',
-        aliasedName,
-        false,
-        type: DriftSqlType.int,
-        requiredDuringInsert: false,
-        defaultValue: const Constant(0),
-      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -153,12 +86,6 @@ class $CarsTable extends Cars with TableInfo<$CarsTable, Car> {
     savedTotalDistance,
     lastObdReading,
     isAccuracyWarning,
-    oilInterval,
-    oilLastChangeDistance,
-    airFilterInterval,
-    airFilterLastChangeDistance,
-    cabinFilterInterval,
-    cabinFilterLastChangeDistance,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -216,60 +143,6 @@ class $CarsTable extends Cars with TableInfo<$CarsTable, Car> {
         ),
       );
     }
-    if (data.containsKey('oil_interval')) {
-      context.handle(
-        _oilIntervalMeta,
-        oilInterval.isAcceptableOrUnknown(
-          data['oil_interval']!,
-          _oilIntervalMeta,
-        ),
-      );
-    }
-    if (data.containsKey('oil_last_change_distance')) {
-      context.handle(
-        _oilLastChangeDistanceMeta,
-        oilLastChangeDistance.isAcceptableOrUnknown(
-          data['oil_last_change_distance']!,
-          _oilLastChangeDistanceMeta,
-        ),
-      );
-    }
-    if (data.containsKey('air_filter_interval')) {
-      context.handle(
-        _airFilterIntervalMeta,
-        airFilterInterval.isAcceptableOrUnknown(
-          data['air_filter_interval']!,
-          _airFilterIntervalMeta,
-        ),
-      );
-    }
-    if (data.containsKey('air_filter_last_change_distance')) {
-      context.handle(
-        _airFilterLastChangeDistanceMeta,
-        airFilterLastChangeDistance.isAcceptableOrUnknown(
-          data['air_filter_last_change_distance']!,
-          _airFilterLastChangeDistanceMeta,
-        ),
-      );
-    }
-    if (data.containsKey('cabin_filter_interval')) {
-      context.handle(
-        _cabinFilterIntervalMeta,
-        cabinFilterInterval.isAcceptableOrUnknown(
-          data['cabin_filter_interval']!,
-          _cabinFilterIntervalMeta,
-        ),
-      );
-    }
-    if (data.containsKey('cabin_filter_last_change_distance')) {
-      context.handle(
-        _cabinFilterLastChangeDistanceMeta,
-        cabinFilterLastChangeDistance.isAcceptableOrUnknown(
-          data['cabin_filter_last_change_distance']!,
-          _cabinFilterLastChangeDistanceMeta,
-        ),
-      );
-    }
     return context;
   }
 
@@ -303,30 +176,6 @@ class $CarsTable extends Cars with TableInfo<$CarsTable, Car> {
         DriftSqlType.bool,
         data['${effectivePrefix}is_accuracy_warning'],
       )!,
-      oilInterval: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}oil_interval'],
-      ),
-      oilLastChangeDistance: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}oil_last_change_distance'],
-      )!,
-      airFilterInterval: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}air_filter_interval'],
-      ),
-      airFilterLastChangeDistance: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}air_filter_last_change_distance'],
-      )!,
-      cabinFilterInterval: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}cabin_filter_interval'],
-      ),
-      cabinFilterLastChangeDistance: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}cabin_filter_last_change_distance'],
-      )!,
     );
   }
 
@@ -343,12 +192,6 @@ class Car extends DataClass implements Insertable<Car> {
   final int savedTotalDistance;
   final int lastObdReading;
   final bool isAccuracyWarning;
-  final int? oilInterval;
-  final int oilLastChangeDistance;
-  final int? airFilterInterval;
-  final int airFilterLastChangeDistance;
-  final int? cabinFilterInterval;
-  final int cabinFilterLastChangeDistance;
   const Car({
     required this.id,
     required this.vin,
@@ -356,12 +199,6 @@ class Car extends DataClass implements Insertable<Car> {
     required this.savedTotalDistance,
     required this.lastObdReading,
     required this.isAccuracyWarning,
-    this.oilInterval,
-    required this.oilLastChangeDistance,
-    this.airFilterInterval,
-    required this.airFilterLastChangeDistance,
-    this.cabinFilterInterval,
-    required this.cabinFilterLastChangeDistance,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -374,22 +211,6 @@ class Car extends DataClass implements Insertable<Car> {
     map['saved_total_distance'] = Variable<int>(savedTotalDistance);
     map['last_obd_reading'] = Variable<int>(lastObdReading);
     map['is_accuracy_warning'] = Variable<bool>(isAccuracyWarning);
-    if (!nullToAbsent || oilInterval != null) {
-      map['oil_interval'] = Variable<int>(oilInterval);
-    }
-    map['oil_last_change_distance'] = Variable<int>(oilLastChangeDistance);
-    if (!nullToAbsent || airFilterInterval != null) {
-      map['air_filter_interval'] = Variable<int>(airFilterInterval);
-    }
-    map['air_filter_last_change_distance'] = Variable<int>(
-      airFilterLastChangeDistance,
-    );
-    if (!nullToAbsent || cabinFilterInterval != null) {
-      map['cabin_filter_interval'] = Variable<int>(cabinFilterInterval);
-    }
-    map['cabin_filter_last_change_distance'] = Variable<int>(
-      cabinFilterLastChangeDistance,
-    );
     return map;
   }
 
@@ -401,18 +222,6 @@ class Car extends DataClass implements Insertable<Car> {
       savedTotalDistance: Value(savedTotalDistance),
       lastObdReading: Value(lastObdReading),
       isAccuracyWarning: Value(isAccuracyWarning),
-      oilInterval: oilInterval == null && nullToAbsent
-          ? const Value.absent()
-          : Value(oilInterval),
-      oilLastChangeDistance: Value(oilLastChangeDistance),
-      airFilterInterval: airFilterInterval == null && nullToAbsent
-          ? const Value.absent()
-          : Value(airFilterInterval),
-      airFilterLastChangeDistance: Value(airFilterLastChangeDistance),
-      cabinFilterInterval: cabinFilterInterval == null && nullToAbsent
-          ? const Value.absent()
-          : Value(cabinFilterInterval),
-      cabinFilterLastChangeDistance: Value(cabinFilterLastChangeDistance),
     );
   }
 
@@ -428,20 +237,6 @@ class Car extends DataClass implements Insertable<Car> {
       savedTotalDistance: serializer.fromJson<int>(json['savedTotalDistance']),
       lastObdReading: serializer.fromJson<int>(json['lastObdReading']),
       isAccuracyWarning: serializer.fromJson<bool>(json['isAccuracyWarning']),
-      oilInterval: serializer.fromJson<int?>(json['oilInterval']),
-      oilLastChangeDistance: serializer.fromJson<int>(
-        json['oilLastChangeDistance'],
-      ),
-      airFilterInterval: serializer.fromJson<int?>(json['airFilterInterval']),
-      airFilterLastChangeDistance: serializer.fromJson<int>(
-        json['airFilterLastChangeDistance'],
-      ),
-      cabinFilterInterval: serializer.fromJson<int?>(
-        json['cabinFilterInterval'],
-      ),
-      cabinFilterLastChangeDistance: serializer.fromJson<int>(
-        json['cabinFilterLastChangeDistance'],
-      ),
     );
   }
   @override
@@ -454,16 +249,6 @@ class Car extends DataClass implements Insertable<Car> {
       'savedTotalDistance': serializer.toJson<int>(savedTotalDistance),
       'lastObdReading': serializer.toJson<int>(lastObdReading),
       'isAccuracyWarning': serializer.toJson<bool>(isAccuracyWarning),
-      'oilInterval': serializer.toJson<int?>(oilInterval),
-      'oilLastChangeDistance': serializer.toJson<int>(oilLastChangeDistance),
-      'airFilterInterval': serializer.toJson<int?>(airFilterInterval),
-      'airFilterLastChangeDistance': serializer.toJson<int>(
-        airFilterLastChangeDistance,
-      ),
-      'cabinFilterInterval': serializer.toJson<int?>(cabinFilterInterval),
-      'cabinFilterLastChangeDistance': serializer.toJson<int>(
-        cabinFilterLastChangeDistance,
-      ),
     };
   }
 
@@ -474,12 +259,6 @@ class Car extends DataClass implements Insertable<Car> {
     int? savedTotalDistance,
     int? lastObdReading,
     bool? isAccuracyWarning,
-    Value<int?> oilInterval = const Value.absent(),
-    int? oilLastChangeDistance,
-    Value<int?> airFilterInterval = const Value.absent(),
-    int? airFilterLastChangeDistance,
-    Value<int?> cabinFilterInterval = const Value.absent(),
-    int? cabinFilterLastChangeDistance,
   }) => Car(
     id: id ?? this.id,
     vin: vin ?? this.vin,
@@ -487,18 +266,6 @@ class Car extends DataClass implements Insertable<Car> {
     savedTotalDistance: savedTotalDistance ?? this.savedTotalDistance,
     lastObdReading: lastObdReading ?? this.lastObdReading,
     isAccuracyWarning: isAccuracyWarning ?? this.isAccuracyWarning,
-    oilInterval: oilInterval.present ? oilInterval.value : this.oilInterval,
-    oilLastChangeDistance: oilLastChangeDistance ?? this.oilLastChangeDistance,
-    airFilterInterval: airFilterInterval.present
-        ? airFilterInterval.value
-        : this.airFilterInterval,
-    airFilterLastChangeDistance:
-        airFilterLastChangeDistance ?? this.airFilterLastChangeDistance,
-    cabinFilterInterval: cabinFilterInterval.present
-        ? cabinFilterInterval.value
-        : this.cabinFilterInterval,
-    cabinFilterLastChangeDistance:
-        cabinFilterLastChangeDistance ?? this.cabinFilterLastChangeDistance,
   );
   Car copyWithCompanion(CarsCompanion data) {
     return Car(
@@ -514,24 +281,6 @@ class Car extends DataClass implements Insertable<Car> {
       isAccuracyWarning: data.isAccuracyWarning.present
           ? data.isAccuracyWarning.value
           : this.isAccuracyWarning,
-      oilInterval: data.oilInterval.present
-          ? data.oilInterval.value
-          : this.oilInterval,
-      oilLastChangeDistance: data.oilLastChangeDistance.present
-          ? data.oilLastChangeDistance.value
-          : this.oilLastChangeDistance,
-      airFilterInterval: data.airFilterInterval.present
-          ? data.airFilterInterval.value
-          : this.airFilterInterval,
-      airFilterLastChangeDistance: data.airFilterLastChangeDistance.present
-          ? data.airFilterLastChangeDistance.value
-          : this.airFilterLastChangeDistance,
-      cabinFilterInterval: data.cabinFilterInterval.present
-          ? data.cabinFilterInterval.value
-          : this.cabinFilterInterval,
-      cabinFilterLastChangeDistance: data.cabinFilterLastChangeDistance.present
-          ? data.cabinFilterLastChangeDistance.value
-          : this.cabinFilterLastChangeDistance,
     );
   }
 
@@ -543,15 +292,7 @@ class Car extends DataClass implements Insertable<Car> {
           ..write('name: $name, ')
           ..write('savedTotalDistance: $savedTotalDistance, ')
           ..write('lastObdReading: $lastObdReading, ')
-          ..write('isAccuracyWarning: $isAccuracyWarning, ')
-          ..write('oilInterval: $oilInterval, ')
-          ..write('oilLastChangeDistance: $oilLastChangeDistance, ')
-          ..write('airFilterInterval: $airFilterInterval, ')
-          ..write('airFilterLastChangeDistance: $airFilterLastChangeDistance, ')
-          ..write('cabinFilterInterval: $cabinFilterInterval, ')
-          ..write(
-            'cabinFilterLastChangeDistance: $cabinFilterLastChangeDistance',
-          )
+          ..write('isAccuracyWarning: $isAccuracyWarning')
           ..write(')'))
         .toString();
   }
@@ -564,12 +305,6 @@ class Car extends DataClass implements Insertable<Car> {
     savedTotalDistance,
     lastObdReading,
     isAccuracyWarning,
-    oilInterval,
-    oilLastChangeDistance,
-    airFilterInterval,
-    airFilterLastChangeDistance,
-    cabinFilterInterval,
-    cabinFilterLastChangeDistance,
   );
   @override
   bool operator ==(Object other) =>
@@ -580,15 +315,7 @@ class Car extends DataClass implements Insertable<Car> {
           other.name == this.name &&
           other.savedTotalDistance == this.savedTotalDistance &&
           other.lastObdReading == this.lastObdReading &&
-          other.isAccuracyWarning == this.isAccuracyWarning &&
-          other.oilInterval == this.oilInterval &&
-          other.oilLastChangeDistance == this.oilLastChangeDistance &&
-          other.airFilterInterval == this.airFilterInterval &&
-          other.airFilterLastChangeDistance ==
-              this.airFilterLastChangeDistance &&
-          other.cabinFilterInterval == this.cabinFilterInterval &&
-          other.cabinFilterLastChangeDistance ==
-              this.cabinFilterLastChangeDistance);
+          other.isAccuracyWarning == this.isAccuracyWarning);
 }
 
 class CarsCompanion extends UpdateCompanion<Car> {
@@ -598,12 +325,6 @@ class CarsCompanion extends UpdateCompanion<Car> {
   final Value<int> savedTotalDistance;
   final Value<int> lastObdReading;
   final Value<bool> isAccuracyWarning;
-  final Value<int?> oilInterval;
-  final Value<int> oilLastChangeDistance;
-  final Value<int?> airFilterInterval;
-  final Value<int> airFilterLastChangeDistance;
-  final Value<int?> cabinFilterInterval;
-  final Value<int> cabinFilterLastChangeDistance;
   const CarsCompanion({
     this.id = const Value.absent(),
     this.vin = const Value.absent(),
@@ -611,12 +332,6 @@ class CarsCompanion extends UpdateCompanion<Car> {
     this.savedTotalDistance = const Value.absent(),
     this.lastObdReading = const Value.absent(),
     this.isAccuracyWarning = const Value.absent(),
-    this.oilInterval = const Value.absent(),
-    this.oilLastChangeDistance = const Value.absent(),
-    this.airFilterInterval = const Value.absent(),
-    this.airFilterLastChangeDistance = const Value.absent(),
-    this.cabinFilterInterval = const Value.absent(),
-    this.cabinFilterLastChangeDistance = const Value.absent(),
   });
   CarsCompanion.insert({
     this.id = const Value.absent(),
@@ -625,12 +340,6 @@ class CarsCompanion extends UpdateCompanion<Car> {
     this.savedTotalDistance = const Value.absent(),
     this.lastObdReading = const Value.absent(),
     this.isAccuracyWarning = const Value.absent(),
-    this.oilInterval = const Value.absent(),
-    this.oilLastChangeDistance = const Value.absent(),
-    this.airFilterInterval = const Value.absent(),
-    this.airFilterLastChangeDistance = const Value.absent(),
-    this.cabinFilterInterval = const Value.absent(),
-    this.cabinFilterLastChangeDistance = const Value.absent(),
   }) : vin = Value(vin);
   static Insertable<Car> custom({
     Expression<int>? id,
@@ -639,12 +348,6 @@ class CarsCompanion extends UpdateCompanion<Car> {
     Expression<int>? savedTotalDistance,
     Expression<int>? lastObdReading,
     Expression<bool>? isAccuracyWarning,
-    Expression<int>? oilInterval,
-    Expression<int>? oilLastChangeDistance,
-    Expression<int>? airFilterInterval,
-    Expression<int>? airFilterLastChangeDistance,
-    Expression<int>? cabinFilterInterval,
-    Expression<int>? cabinFilterLastChangeDistance,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -654,16 +357,6 @@ class CarsCompanion extends UpdateCompanion<Car> {
         'saved_total_distance': savedTotalDistance,
       if (lastObdReading != null) 'last_obd_reading': lastObdReading,
       if (isAccuracyWarning != null) 'is_accuracy_warning': isAccuracyWarning,
-      if (oilInterval != null) 'oil_interval': oilInterval,
-      if (oilLastChangeDistance != null)
-        'oil_last_change_distance': oilLastChangeDistance,
-      if (airFilterInterval != null) 'air_filter_interval': airFilterInterval,
-      if (airFilterLastChangeDistance != null)
-        'air_filter_last_change_distance': airFilterLastChangeDistance,
-      if (cabinFilterInterval != null)
-        'cabin_filter_interval': cabinFilterInterval,
-      if (cabinFilterLastChangeDistance != null)
-        'cabin_filter_last_change_distance': cabinFilterLastChangeDistance,
     });
   }
 
@@ -674,12 +367,6 @@ class CarsCompanion extends UpdateCompanion<Car> {
     Value<int>? savedTotalDistance,
     Value<int>? lastObdReading,
     Value<bool>? isAccuracyWarning,
-    Value<int?>? oilInterval,
-    Value<int>? oilLastChangeDistance,
-    Value<int?>? airFilterInterval,
-    Value<int>? airFilterLastChangeDistance,
-    Value<int?>? cabinFilterInterval,
-    Value<int>? cabinFilterLastChangeDistance,
   }) {
     return CarsCompanion(
       id: id ?? this.id,
@@ -688,15 +375,6 @@ class CarsCompanion extends UpdateCompanion<Car> {
       savedTotalDistance: savedTotalDistance ?? this.savedTotalDistance,
       lastObdReading: lastObdReading ?? this.lastObdReading,
       isAccuracyWarning: isAccuracyWarning ?? this.isAccuracyWarning,
-      oilInterval: oilInterval ?? this.oilInterval,
-      oilLastChangeDistance:
-          oilLastChangeDistance ?? this.oilLastChangeDistance,
-      airFilterInterval: airFilterInterval ?? this.airFilterInterval,
-      airFilterLastChangeDistance:
-          airFilterLastChangeDistance ?? this.airFilterLastChangeDistance,
-      cabinFilterInterval: cabinFilterInterval ?? this.cabinFilterInterval,
-      cabinFilterLastChangeDistance:
-          cabinFilterLastChangeDistance ?? this.cabinFilterLastChangeDistance,
     );
   }
 
@@ -721,30 +399,6 @@ class CarsCompanion extends UpdateCompanion<Car> {
     if (isAccuracyWarning.present) {
       map['is_accuracy_warning'] = Variable<bool>(isAccuracyWarning.value);
     }
-    if (oilInterval.present) {
-      map['oil_interval'] = Variable<int>(oilInterval.value);
-    }
-    if (oilLastChangeDistance.present) {
-      map['oil_last_change_distance'] = Variable<int>(
-        oilLastChangeDistance.value,
-      );
-    }
-    if (airFilterInterval.present) {
-      map['air_filter_interval'] = Variable<int>(airFilterInterval.value);
-    }
-    if (airFilterLastChangeDistance.present) {
-      map['air_filter_last_change_distance'] = Variable<int>(
-        airFilterLastChangeDistance.value,
-      );
-    }
-    if (cabinFilterInterval.present) {
-      map['cabin_filter_interval'] = Variable<int>(cabinFilterInterval.value);
-    }
-    if (cabinFilterLastChangeDistance.present) {
-      map['cabin_filter_last_change_distance'] = Variable<int>(
-        cabinFilterLastChangeDistance.value,
-      );
-    }
     return map;
   }
 
@@ -756,15 +410,7 @@ class CarsCompanion extends UpdateCompanion<Car> {
           ..write('name: $name, ')
           ..write('savedTotalDistance: $savedTotalDistance, ')
           ..write('lastObdReading: $lastObdReading, ')
-          ..write('isAccuracyWarning: $isAccuracyWarning, ')
-          ..write('oilInterval: $oilInterval, ')
-          ..write('oilLastChangeDistance: $oilLastChangeDistance, ')
-          ..write('airFilterInterval: $airFilterInterval, ')
-          ..write('airFilterLastChangeDistance: $airFilterLastChangeDistance, ')
-          ..write('cabinFilterInterval: $cabinFilterInterval, ')
-          ..write(
-            'cabinFilterLastChangeDistance: $cabinFilterLastChangeDistance',
-          )
+          ..write('isAccuracyWarning: $isAccuracyWarning')
           ..write(')'))
         .toString();
   }
@@ -1329,6 +975,28 @@ class $TripPointsTable extends TripPoints
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _latitudeMeta = const VerificationMeta(
+    'latitude',
+  );
+  @override
+  late final GeneratedColumn<double> latitude = GeneratedColumn<double>(
+    'latitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _longitudeMeta = const VerificationMeta(
+    'longitude',
+  );
+  @override
+  late final GeneratedColumn<double> longitude = GeneratedColumn<double>(
+    'longitude',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1338,6 +1006,8 @@ class $TripPointsTable extends TripPoints
     rpm,
     throttlePosition,
     engineTemp,
+    latitude,
+    longitude,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1405,6 +1075,18 @@ class $TripPointsTable extends TripPoints
     } else if (isInserting) {
       context.missing(_engineTempMeta);
     }
+    if (data.containsKey('latitude')) {
+      context.handle(
+        _latitudeMeta,
+        latitude.isAcceptableOrUnknown(data['latitude']!, _latitudeMeta),
+      );
+    }
+    if (data.containsKey('longitude')) {
+      context.handle(
+        _longitudeMeta,
+        longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
+      );
+    }
     return context;
   }
 
@@ -1442,6 +1124,14 @@ class $TripPointsTable extends TripPoints
         DriftSqlType.int,
         data['${effectivePrefix}engine_temp'],
       )!,
+      latitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}latitude'],
+      ),
+      longitude: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}longitude'],
+      ),
     );
   }
 
@@ -1459,6 +1149,8 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
   final int rpm;
   final int throttlePosition;
   final int engineTemp;
+  final double? latitude;
+  final double? longitude;
   const TripPoint({
     required this.id,
     required this.tripId,
@@ -1467,6 +1159,8 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
     required this.rpm,
     required this.throttlePosition,
     required this.engineTemp,
+    this.latitude,
+    this.longitude,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1478,6 +1172,12 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
     map['rpm'] = Variable<int>(rpm);
     map['throttle_position'] = Variable<int>(throttlePosition);
     map['engine_temp'] = Variable<int>(engineTemp);
+    if (!nullToAbsent || latitude != null) {
+      map['latitude'] = Variable<double>(latitude);
+    }
+    if (!nullToAbsent || longitude != null) {
+      map['longitude'] = Variable<double>(longitude);
+    }
     return map;
   }
 
@@ -1490,6 +1190,12 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
       rpm: Value(rpm),
       throttlePosition: Value(throttlePosition),
       engineTemp: Value(engineTemp),
+      latitude: latitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(latitude),
+      longitude: longitude == null && nullToAbsent
+          ? const Value.absent()
+          : Value(longitude),
     );
   }
 
@@ -1506,6 +1212,8 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
       rpm: serializer.fromJson<int>(json['rpm']),
       throttlePosition: serializer.fromJson<int>(json['throttlePosition']),
       engineTemp: serializer.fromJson<int>(json['engineTemp']),
+      latitude: serializer.fromJson<double?>(json['latitude']),
+      longitude: serializer.fromJson<double?>(json['longitude']),
     );
   }
   @override
@@ -1519,6 +1227,8 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
       'rpm': serializer.toJson<int>(rpm),
       'throttlePosition': serializer.toJson<int>(throttlePosition),
       'engineTemp': serializer.toJson<int>(engineTemp),
+      'latitude': serializer.toJson<double?>(latitude),
+      'longitude': serializer.toJson<double?>(longitude),
     };
   }
 
@@ -1530,6 +1240,8 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
     int? rpm,
     int? throttlePosition,
     int? engineTemp,
+    Value<double?> latitude = const Value.absent(),
+    Value<double?> longitude = const Value.absent(),
   }) => TripPoint(
     id: id ?? this.id,
     tripId: tripId ?? this.tripId,
@@ -1538,6 +1250,8 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
     rpm: rpm ?? this.rpm,
     throttlePosition: throttlePosition ?? this.throttlePosition,
     engineTemp: engineTemp ?? this.engineTemp,
+    latitude: latitude.present ? latitude.value : this.latitude,
+    longitude: longitude.present ? longitude.value : this.longitude,
   );
   TripPoint copyWithCompanion(TripPointsCompanion data) {
     return TripPoint(
@@ -1552,6 +1266,8 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
       engineTemp: data.engineTemp.present
           ? data.engineTemp.value
           : this.engineTemp,
+      latitude: data.latitude.present ? data.latitude.value : this.latitude,
+      longitude: data.longitude.present ? data.longitude.value : this.longitude,
     );
   }
 
@@ -1564,7 +1280,9 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
           ..write('speed: $speed, ')
           ..write('rpm: $rpm, ')
           ..write('throttlePosition: $throttlePosition, ')
-          ..write('engineTemp: $engineTemp')
+          ..write('engineTemp: $engineTemp, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude')
           ..write(')'))
         .toString();
   }
@@ -1578,6 +1296,8 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
     rpm,
     throttlePosition,
     engineTemp,
+    latitude,
+    longitude,
   );
   @override
   bool operator ==(Object other) =>
@@ -1589,7 +1309,9 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
           other.speed == this.speed &&
           other.rpm == this.rpm &&
           other.throttlePosition == this.throttlePosition &&
-          other.engineTemp == this.engineTemp);
+          other.engineTemp == this.engineTemp &&
+          other.latitude == this.latitude &&
+          other.longitude == this.longitude);
 }
 
 class TripPointsCompanion extends UpdateCompanion<TripPoint> {
@@ -1600,6 +1322,8 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
   final Value<int> rpm;
   final Value<int> throttlePosition;
   final Value<int> engineTemp;
+  final Value<double?> latitude;
+  final Value<double?> longitude;
   const TripPointsCompanion({
     this.id = const Value.absent(),
     this.tripId = const Value.absent(),
@@ -1608,6 +1332,8 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
     this.rpm = const Value.absent(),
     this.throttlePosition = const Value.absent(),
     this.engineTemp = const Value.absent(),
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
   });
   TripPointsCompanion.insert({
     this.id = const Value.absent(),
@@ -1617,6 +1343,8 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
     required int rpm,
     required int throttlePosition,
     required int engineTemp,
+    this.latitude = const Value.absent(),
+    this.longitude = const Value.absent(),
   }) : tripId = Value(tripId),
        timestamp = Value(timestamp),
        speed = Value(speed),
@@ -1631,6 +1359,8 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
     Expression<int>? rpm,
     Expression<int>? throttlePosition,
     Expression<int>? engineTemp,
+    Expression<double>? latitude,
+    Expression<double>? longitude,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1640,6 +1370,8 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
       if (rpm != null) 'rpm': rpm,
       if (throttlePosition != null) 'throttle_position': throttlePosition,
       if (engineTemp != null) 'engine_temp': engineTemp,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
     });
   }
 
@@ -1651,6 +1383,8 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
     Value<int>? rpm,
     Value<int>? throttlePosition,
     Value<int>? engineTemp,
+    Value<double?>? latitude,
+    Value<double?>? longitude,
   }) {
     return TripPointsCompanion(
       id: id ?? this.id,
@@ -1660,6 +1394,8 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
       rpm: rpm ?? this.rpm,
       throttlePosition: throttlePosition ?? this.throttlePosition,
       engineTemp: engineTemp ?? this.engineTemp,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
     );
   }
 
@@ -1687,6 +1423,12 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
     if (engineTemp.present) {
       map['engine_temp'] = Variable<int>(engineTemp.value);
     }
+    if (latitude.present) {
+      map['latitude'] = Variable<double>(latitude.value);
+    }
+    if (longitude.present) {
+      map['longitude'] = Variable<double>(longitude.value);
+    }
     return map;
   }
 
@@ -1699,7 +1441,9 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
           ..write('speed: $speed, ')
           ..write('rpm: $rpm, ')
           ..write('throttlePosition: $throttlePosition, ')
-          ..write('engineTemp: $engineTemp')
+          ..write('engineTemp: $engineTemp, ')
+          ..write('latitude: $latitude, ')
+          ..write('longitude: $longitude')
           ..write(')'))
         .toString();
   }
@@ -1925,6 +1669,418 @@ class DtcCacheCompanion extends UpdateCompanion<DtcCacheData> {
   }
 }
 
+class $MaintenanceTasksTable extends MaintenanceTasks
+    with TableInfo<$MaintenanceTasksTable, MaintenanceTask> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MaintenanceTasksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _carIdMeta = const VerificationMeta('carId');
+  @override
+  late final GeneratedColumn<int> carId = GeneratedColumn<int>(
+    'car_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES cars (id)',
+    ),
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _intervalKmMeta = const VerificationMeta(
+    'intervalKm',
+  );
+  @override
+  late final GeneratedColumn<int> intervalKm = GeneratedColumn<int>(
+    'interval_km',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastChangeKmMeta = const VerificationMeta(
+    'lastChangeKm',
+  );
+  @override
+  late final GeneratedColumn<int> lastChangeKm = GeneratedColumn<int>(
+    'last_change_km',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    carId,
+    title,
+    description,
+    intervalKm,
+    lastChangeKm,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'maintenance_tasks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MaintenanceTask> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('car_id')) {
+      context.handle(
+        _carIdMeta,
+        carId.isAcceptableOrUnknown(data['car_id']!, _carIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_carIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('interval_km')) {
+      context.handle(
+        _intervalKmMeta,
+        intervalKm.isAcceptableOrUnknown(data['interval_km']!, _intervalKmMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_intervalKmMeta);
+    }
+    if (data.containsKey('last_change_km')) {
+      context.handle(
+        _lastChangeKmMeta,
+        lastChangeKm.isAcceptableOrUnknown(
+          data['last_change_km']!,
+          _lastChangeKmMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_lastChangeKmMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MaintenanceTask map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MaintenanceTask(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      carId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}car_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      intervalKm: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}interval_km'],
+      )!,
+      lastChangeKm: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_change_km'],
+      )!,
+    );
+  }
+
+  @override
+  $MaintenanceTasksTable createAlias(String alias) {
+    return $MaintenanceTasksTable(attachedDatabase, alias);
+  }
+}
+
+class MaintenanceTask extends DataClass implements Insertable<MaintenanceTask> {
+  final int id;
+  final int carId;
+  final String title;
+  final String? description;
+  final int intervalKm;
+  final int lastChangeKm;
+  const MaintenanceTask({
+    required this.id,
+    required this.carId,
+    required this.title,
+    this.description,
+    required this.intervalKm,
+    required this.lastChangeKm,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['car_id'] = Variable<int>(carId);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['interval_km'] = Variable<int>(intervalKm);
+    map['last_change_km'] = Variable<int>(lastChangeKm);
+    return map;
+  }
+
+  MaintenanceTasksCompanion toCompanion(bool nullToAbsent) {
+    return MaintenanceTasksCompanion(
+      id: Value(id),
+      carId: Value(carId),
+      title: Value(title),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      intervalKm: Value(intervalKm),
+      lastChangeKm: Value(lastChangeKm),
+    );
+  }
+
+  factory MaintenanceTask.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MaintenanceTask(
+      id: serializer.fromJson<int>(json['id']),
+      carId: serializer.fromJson<int>(json['carId']),
+      title: serializer.fromJson<String>(json['title']),
+      description: serializer.fromJson<String?>(json['description']),
+      intervalKm: serializer.fromJson<int>(json['intervalKm']),
+      lastChangeKm: serializer.fromJson<int>(json['lastChangeKm']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'carId': serializer.toJson<int>(carId),
+      'title': serializer.toJson<String>(title),
+      'description': serializer.toJson<String?>(description),
+      'intervalKm': serializer.toJson<int>(intervalKm),
+      'lastChangeKm': serializer.toJson<int>(lastChangeKm),
+    };
+  }
+
+  MaintenanceTask copyWith({
+    int? id,
+    int? carId,
+    String? title,
+    Value<String?> description = const Value.absent(),
+    int? intervalKm,
+    int? lastChangeKm,
+  }) => MaintenanceTask(
+    id: id ?? this.id,
+    carId: carId ?? this.carId,
+    title: title ?? this.title,
+    description: description.present ? description.value : this.description,
+    intervalKm: intervalKm ?? this.intervalKm,
+    lastChangeKm: lastChangeKm ?? this.lastChangeKm,
+  );
+  MaintenanceTask copyWithCompanion(MaintenanceTasksCompanion data) {
+    return MaintenanceTask(
+      id: data.id.present ? data.id.value : this.id,
+      carId: data.carId.present ? data.carId.value : this.carId,
+      title: data.title.present ? data.title.value : this.title,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      intervalKm: data.intervalKm.present
+          ? data.intervalKm.value
+          : this.intervalKm,
+      lastChangeKm: data.lastChangeKm.present
+          ? data.lastChangeKm.value
+          : this.lastChangeKm,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MaintenanceTask(')
+          ..write('id: $id, ')
+          ..write('carId: $carId, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('intervalKm: $intervalKm, ')
+          ..write('lastChangeKm: $lastChangeKm')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, carId, title, description, intervalKm, lastChangeKm);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MaintenanceTask &&
+          other.id == this.id &&
+          other.carId == this.carId &&
+          other.title == this.title &&
+          other.description == this.description &&
+          other.intervalKm == this.intervalKm &&
+          other.lastChangeKm == this.lastChangeKm);
+}
+
+class MaintenanceTasksCompanion extends UpdateCompanion<MaintenanceTask> {
+  final Value<int> id;
+  final Value<int> carId;
+  final Value<String> title;
+  final Value<String?> description;
+  final Value<int> intervalKm;
+  final Value<int> lastChangeKm;
+  const MaintenanceTasksCompanion({
+    this.id = const Value.absent(),
+    this.carId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.description = const Value.absent(),
+    this.intervalKm = const Value.absent(),
+    this.lastChangeKm = const Value.absent(),
+  });
+  MaintenanceTasksCompanion.insert({
+    this.id = const Value.absent(),
+    required int carId,
+    required String title,
+    this.description = const Value.absent(),
+    required int intervalKm,
+    required int lastChangeKm,
+  }) : carId = Value(carId),
+       title = Value(title),
+       intervalKm = Value(intervalKm),
+       lastChangeKm = Value(lastChangeKm);
+  static Insertable<MaintenanceTask> custom({
+    Expression<int>? id,
+    Expression<int>? carId,
+    Expression<String>? title,
+    Expression<String>? description,
+    Expression<int>? intervalKm,
+    Expression<int>? lastChangeKm,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (carId != null) 'car_id': carId,
+      if (title != null) 'title': title,
+      if (description != null) 'description': description,
+      if (intervalKm != null) 'interval_km': intervalKm,
+      if (lastChangeKm != null) 'last_change_km': lastChangeKm,
+    });
+  }
+
+  MaintenanceTasksCompanion copyWith({
+    Value<int>? id,
+    Value<int>? carId,
+    Value<String>? title,
+    Value<String?>? description,
+    Value<int>? intervalKm,
+    Value<int>? lastChangeKm,
+  }) {
+    return MaintenanceTasksCompanion(
+      id: id ?? this.id,
+      carId: carId ?? this.carId,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      intervalKm: intervalKm ?? this.intervalKm,
+      lastChangeKm: lastChangeKm ?? this.lastChangeKm,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (carId.present) {
+      map['car_id'] = Variable<int>(carId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (intervalKm.present) {
+      map['interval_km'] = Variable<int>(intervalKm.value);
+    }
+    if (lastChangeKm.present) {
+      map['last_change_km'] = Variable<int>(lastChangeKm.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MaintenanceTasksCompanion(')
+          ..write('id: $id, ')
+          ..write('carId: $carId, ')
+          ..write('title: $title, ')
+          ..write('description: $description, ')
+          ..write('intervalKm: $intervalKm, ')
+          ..write('lastChangeKm: $lastChangeKm')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1932,6 +2088,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $TripsTable trips = $TripsTable(this);
   late final $TripPointsTable tripPoints = $TripPointsTable(this);
   late final $DtcCacheTable dtcCache = $DtcCacheTable(this);
+  late final $MaintenanceTasksTable maintenanceTasks = $MaintenanceTasksTable(
+    this,
+  );
   late final CarsDao carsDao = CarsDao(this as AppDatabase);
   late final TripsDao tripsDao = TripsDao(this as AppDatabase);
   late final DtcDao dtcDao = DtcDao(this as AppDatabase);
@@ -1944,6 +2103,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     trips,
     tripPoints,
     dtcCache,
+    maintenanceTasks,
   ];
 }
 
@@ -1955,12 +2115,6 @@ typedef $$CarsTableCreateCompanionBuilder =
       Value<int> savedTotalDistance,
       Value<int> lastObdReading,
       Value<bool> isAccuracyWarning,
-      Value<int?> oilInterval,
-      Value<int> oilLastChangeDistance,
-      Value<int?> airFilterInterval,
-      Value<int> airFilterLastChangeDistance,
-      Value<int?> cabinFilterInterval,
-      Value<int> cabinFilterLastChangeDistance,
     });
 typedef $$CarsTableUpdateCompanionBuilder =
     CarsCompanion Function({
@@ -1970,12 +2124,6 @@ typedef $$CarsTableUpdateCompanionBuilder =
       Value<int> savedTotalDistance,
       Value<int> lastObdReading,
       Value<bool> isAccuracyWarning,
-      Value<int?> oilInterval,
-      Value<int> oilLastChangeDistance,
-      Value<int?> airFilterInterval,
-      Value<int> airFilterLastChangeDistance,
-      Value<int?> cabinFilterInterval,
-      Value<int> cabinFilterLastChangeDistance,
     });
 
 final class $$CarsTableReferences
@@ -1996,6 +2144,26 @@ final class $$CarsTableReferences
     ).filter((f) => f.carId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_tripsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$MaintenanceTasksTable, List<MaintenanceTask>>
+  _maintenanceTasksRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.maintenanceTasks,
+    aliasName: 'cars__id__maintenance_tasks__car_id',
+  );
+
+  $$MaintenanceTasksTableProcessedTableManager get maintenanceTasksRefs {
+    final manager = $$MaintenanceTasksTableTableManager(
+      $_db,
+      $_db.maintenanceTasks,
+    ).filter((f) => f.carId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _maintenanceTasksRefsTable($_db),
+    );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -2040,36 +2208,6 @@ class $$CarsTableFilterComposer extends Composer<_$AppDatabase, $CarsTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get oilInterval => $composableBuilder(
-    column: $table.oilInterval,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get oilLastChangeDistance => $composableBuilder(
-    column: $table.oilLastChangeDistance,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get airFilterInterval => $composableBuilder(
-    column: $table.airFilterInterval,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get airFilterLastChangeDistance => $composableBuilder(
-    column: $table.airFilterLastChangeDistance,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get cabinFilterInterval => $composableBuilder(
-    column: $table.cabinFilterInterval,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get cabinFilterLastChangeDistance => $composableBuilder(
-    column: $table.cabinFilterLastChangeDistance,
-    builder: (column) => ColumnFilters(column),
-  );
-
   Expression<bool> tripsRefs(
     Expression<bool> Function($$TripsTableFilterComposer f) f,
   ) {
@@ -2086,6 +2224,31 @@ class $$CarsTableFilterComposer extends Composer<_$AppDatabase, $CarsTable> {
           }) => $$TripsTableFilterComposer(
             $db: $db,
             $table: $db.trips,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> maintenanceTasksRefs(
+    Expression<bool> Function($$MaintenanceTasksTableFilterComposer f) f,
+  ) {
+    final $$MaintenanceTasksTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.maintenanceTasks,
+      getReferencedColumn: (t) => t.carId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MaintenanceTasksTableFilterComposer(
+            $db: $db,
+            $table: $db.maintenanceTasks,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2133,36 +2296,6 @@ class $$CarsTableOrderingComposer extends Composer<_$AppDatabase, $CarsTable> {
     column: $table.isAccuracyWarning,
     builder: (column) => ColumnOrderings(column),
   );
-
-  ColumnOrderings<int> get oilInterval => $composableBuilder(
-    column: $table.oilInterval,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get oilLastChangeDistance => $composableBuilder(
-    column: $table.oilLastChangeDistance,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get airFilterInterval => $composableBuilder(
-    column: $table.airFilterInterval,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get airFilterLastChangeDistance => $composableBuilder(
-    column: $table.airFilterLastChangeDistance,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get cabinFilterInterval => $composableBuilder(
-    column: $table.cabinFilterInterval,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get cabinFilterLastChangeDistance => $composableBuilder(
-    column: $table.cabinFilterLastChangeDistance,
-    builder: (column) => ColumnOrderings(column),
-  );
 }
 
 class $$CarsTableAnnotationComposer
@@ -2198,36 +2331,6 @@ class $$CarsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get oilInterval => $composableBuilder(
-    column: $table.oilInterval,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get oilLastChangeDistance => $composableBuilder(
-    column: $table.oilLastChangeDistance,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get airFilterInterval => $composableBuilder(
-    column: $table.airFilterInterval,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get airFilterLastChangeDistance => $composableBuilder(
-    column: $table.airFilterLastChangeDistance,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get cabinFilterInterval => $composableBuilder(
-    column: $table.cabinFilterInterval,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get cabinFilterLastChangeDistance => $composableBuilder(
-    column: $table.cabinFilterLastChangeDistance,
-    builder: (column) => column,
-  );
-
   Expression<T> tripsRefs<T extends Object>(
     Expression<T> Function($$TripsTableAnnotationComposer a) f,
   ) {
@@ -2252,6 +2355,31 @@ class $$CarsTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> maintenanceTasksRefs<T extends Object>(
+    Expression<T> Function($$MaintenanceTasksTableAnnotationComposer a) f,
+  ) {
+    final $$MaintenanceTasksTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.maintenanceTasks,
+      getReferencedColumn: (t) => t.carId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MaintenanceTasksTableAnnotationComposer(
+            $db: $db,
+            $table: $db.maintenanceTasks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$CarsTableTableManager
@@ -2267,7 +2395,7 @@ class $$CarsTableTableManager
           $$CarsTableUpdateCompanionBuilder,
           (Car, $$CarsTableReferences),
           Car,
-          PrefetchHooks Function({bool tripsRefs})
+          PrefetchHooks Function({bool tripsRefs, bool maintenanceTasksRefs})
         > {
   $$CarsTableTableManager(_$AppDatabase db, $CarsTable table)
     : super(
@@ -2288,12 +2416,6 @@ class $$CarsTableTableManager
                 Value<int> savedTotalDistance = const Value.absent(),
                 Value<int> lastObdReading = const Value.absent(),
                 Value<bool> isAccuracyWarning = const Value.absent(),
-                Value<int?> oilInterval = const Value.absent(),
-                Value<int> oilLastChangeDistance = const Value.absent(),
-                Value<int?> airFilterInterval = const Value.absent(),
-                Value<int> airFilterLastChangeDistance = const Value.absent(),
-                Value<int?> cabinFilterInterval = const Value.absent(),
-                Value<int> cabinFilterLastChangeDistance = const Value.absent(),
               }) => CarsCompanion(
                 id: id,
                 vin: vin,
@@ -2301,12 +2423,6 @@ class $$CarsTableTableManager
                 savedTotalDistance: savedTotalDistance,
                 lastObdReading: lastObdReading,
                 isAccuracyWarning: isAccuracyWarning,
-                oilInterval: oilInterval,
-                oilLastChangeDistance: oilLastChangeDistance,
-                airFilterInterval: airFilterInterval,
-                airFilterLastChangeDistance: airFilterLastChangeDistance,
-                cabinFilterInterval: cabinFilterInterval,
-                cabinFilterLastChangeDistance: cabinFilterLastChangeDistance,
               ),
           createCompanionCallback:
               ({
@@ -2316,12 +2432,6 @@ class $$CarsTableTableManager
                 Value<int> savedTotalDistance = const Value.absent(),
                 Value<int> lastObdReading = const Value.absent(),
                 Value<bool> isAccuracyWarning = const Value.absent(),
-                Value<int?> oilInterval = const Value.absent(),
-                Value<int> oilLastChangeDistance = const Value.absent(),
-                Value<int?> airFilterInterval = const Value.absent(),
-                Value<int> airFilterLastChangeDistance = const Value.absent(),
-                Value<int?> cabinFilterInterval = const Value.absent(),
-                Value<int> cabinFilterLastChangeDistance = const Value.absent(),
               }) => CarsCompanion.insert(
                 id: id,
                 vin: vin,
@@ -2329,12 +2439,6 @@ class $$CarsTableTableManager
                 savedTotalDistance: savedTotalDistance,
                 lastObdReading: lastObdReading,
                 isAccuracyWarning: isAccuracyWarning,
-                oilInterval: oilInterval,
-                oilLastChangeDistance: oilLastChangeDistance,
-                airFilterInterval: airFilterInterval,
-                airFilterLastChangeDistance: airFilterLastChangeDistance,
-                cabinFilterInterval: cabinFilterInterval,
-                cabinFilterLastChangeDistance: cabinFilterLastChangeDistance,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -2342,29 +2446,54 @@ class $$CarsTableTableManager
                     (e.readTable(table), $$CarsTableReferences(db, table, e)),
               )
               .toList(),
-          prefetchHooksCallback: ({tripsRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (tripsRefs) db.trips],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (tripsRefs)
-                    await $_getPrefetchedData<Car, $CarsTable, Trip>(
-                      currentTable: table,
-                      referencedTable: $$CarsTableReferences._tripsRefsTable(
-                        db,
-                      ),
-                      managerFromTypedResult: (p0) =>
-                          $$CarsTableReferences(db, table, p0).tripsRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.carId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({tripsRefs = false, maintenanceTasksRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (tripsRefs) db.trips,
+                    if (maintenanceTasksRefs) db.maintenanceTasks,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (tripsRefs)
+                        await $_getPrefetchedData<Car, $CarsTable, Trip>(
+                          currentTable: table,
+                          referencedTable: $$CarsTableReferences
+                              ._tripsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CarsTableReferences(db, table, p0).tripsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.carId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (maintenanceTasksRefs)
+                        await $_getPrefetchedData<
+                          Car,
+                          $CarsTable,
+                          MaintenanceTask
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CarsTableReferences
+                              ._maintenanceTasksRefsTable(db),
+                          managerFromTypedResult: (p0) => $$CarsTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).maintenanceTasksRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.carId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -2381,7 +2510,7 @@ typedef $$CarsTableProcessedTableManager =
       $$CarsTableUpdateCompanionBuilder,
       (Car, $$CarsTableReferences),
       Car,
-      PrefetchHooks Function({bool tripsRefs})
+      PrefetchHooks Function({bool tripsRefs, bool maintenanceTasksRefs})
     >;
 typedef $$TripsTableCreateCompanionBuilder =
     TripsCompanion Function({
@@ -2828,6 +2957,8 @@ typedef $$TripPointsTableCreateCompanionBuilder =
       required int rpm,
       required int throttlePosition,
       required int engineTemp,
+      Value<double?> latitude,
+      Value<double?> longitude,
     });
 typedef $$TripPointsTableUpdateCompanionBuilder =
     TripPointsCompanion Function({
@@ -2838,6 +2969,8 @@ typedef $$TripPointsTableUpdateCompanionBuilder =
       Value<int> rpm,
       Value<int> throttlePosition,
       Value<int> engineTemp,
+      Value<double?> latitude,
+      Value<double?> longitude,
     });
 
 final class $$TripPointsTableReferences
@@ -2898,6 +3031,16 @@ class $$TripPointsTableFilterComposer
 
   ColumnFilters<int> get engineTemp => $composableBuilder(
     column: $table.engineTemp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get longitude => $composableBuilder(
+    column: $table.longitude,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2964,6 +3107,16 @@ class $$TripPointsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<double> get latitude => $composableBuilder(
+    column: $table.latitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get longitude => $composableBuilder(
+    column: $table.longitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$TripsTableOrderingComposer get tripId {
     final $$TripsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -3018,6 +3171,12 @@ class $$TripPointsTableAnnotationComposer
     column: $table.engineTemp,
     builder: (column) => column,
   );
+
+  GeneratedColumn<double> get latitude =>
+      $composableBuilder(column: $table.latitude, builder: (column) => column);
+
+  GeneratedColumn<double> get longitude =>
+      $composableBuilder(column: $table.longitude, builder: (column) => column);
 
   $$TripsTableAnnotationComposer get tripId {
     final $$TripsTableAnnotationComposer composer = $composerBuilder(
@@ -3078,6 +3237,8 @@ class $$TripPointsTableTableManager
                 Value<int> rpm = const Value.absent(),
                 Value<int> throttlePosition = const Value.absent(),
                 Value<int> engineTemp = const Value.absent(),
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
               }) => TripPointsCompanion(
                 id: id,
                 tripId: tripId,
@@ -3086,6 +3247,8 @@ class $$TripPointsTableTableManager
                 rpm: rpm,
                 throttlePosition: throttlePosition,
                 engineTemp: engineTemp,
+                latitude: latitude,
+                longitude: longitude,
               ),
           createCompanionCallback:
               ({
@@ -3096,6 +3259,8 @@ class $$TripPointsTableTableManager
                 required int rpm,
                 required int throttlePosition,
                 required int engineTemp,
+                Value<double?> latitude = const Value.absent(),
+                Value<double?> longitude = const Value.absent(),
               }) => TripPointsCompanion.insert(
                 id: id,
                 tripId: tripId,
@@ -3104,6 +3269,8 @@ class $$TripPointsTableTableManager
                 rpm: rpm,
                 throttlePosition: throttlePosition,
                 engineTemp: engineTemp,
+                latitude: latitude,
+                longitude: longitude,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -3317,6 +3484,351 @@ typedef $$DtcCacheTableProcessedTableManager =
       DtcCacheData,
       PrefetchHooks Function()
     >;
+typedef $$MaintenanceTasksTableCreateCompanionBuilder =
+    MaintenanceTasksCompanion Function({
+      Value<int> id,
+      required int carId,
+      required String title,
+      Value<String?> description,
+      required int intervalKm,
+      required int lastChangeKm,
+    });
+typedef $$MaintenanceTasksTableUpdateCompanionBuilder =
+    MaintenanceTasksCompanion Function({
+      Value<int> id,
+      Value<int> carId,
+      Value<String> title,
+      Value<String?> description,
+      Value<int> intervalKm,
+      Value<int> lastChangeKm,
+    });
+
+final class $$MaintenanceTasksTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $MaintenanceTasksTable, MaintenanceTask> {
+  $$MaintenanceTasksTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $CarsTable _carIdTable(_$AppDatabase db) =>
+      db.cars.createAlias('maintenance_tasks__car_id__cars__id');
+
+  $$CarsTableProcessedTableManager get carId {
+    final $_column = $_itemColumn<int>('car_id')!;
+
+    final manager = $$CarsTableTableManager(
+      $_db,
+      $_db.cars,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_carIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$MaintenanceTasksTableFilterComposer
+    extends Composer<_$AppDatabase, $MaintenanceTasksTable> {
+  $$MaintenanceTasksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get intervalKm => $composableBuilder(
+    column: $table.intervalKm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get lastChangeKm => $composableBuilder(
+    column: $table.lastChangeKm,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$CarsTableFilterComposer get carId {
+    final $$CarsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.carId,
+      referencedTable: $db.cars,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CarsTableFilterComposer(
+            $db: $db,
+            $table: $db.cars,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MaintenanceTasksTableOrderingComposer
+    extends Composer<_$AppDatabase, $MaintenanceTasksTable> {
+  $$MaintenanceTasksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get intervalKm => $composableBuilder(
+    column: $table.intervalKm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get lastChangeKm => $composableBuilder(
+    column: $table.lastChangeKm,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$CarsTableOrderingComposer get carId {
+    final $$CarsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.carId,
+      referencedTable: $db.cars,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CarsTableOrderingComposer(
+            $db: $db,
+            $table: $db.cars,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MaintenanceTasksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MaintenanceTasksTable> {
+  $$MaintenanceTasksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get intervalKm => $composableBuilder(
+    column: $table.intervalKm,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get lastChangeKm => $composableBuilder(
+    column: $table.lastChangeKm,
+    builder: (column) => column,
+  );
+
+  $$CarsTableAnnotationComposer get carId {
+    final $$CarsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.carId,
+      referencedTable: $db.cars,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CarsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.cars,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MaintenanceTasksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MaintenanceTasksTable,
+          MaintenanceTask,
+          $$MaintenanceTasksTableFilterComposer,
+          $$MaintenanceTasksTableOrderingComposer,
+          $$MaintenanceTasksTableAnnotationComposer,
+          $$MaintenanceTasksTableCreateCompanionBuilder,
+          $$MaintenanceTasksTableUpdateCompanionBuilder,
+          (MaintenanceTask, $$MaintenanceTasksTableReferences),
+          MaintenanceTask,
+          PrefetchHooks Function({bool carId})
+        > {
+  $$MaintenanceTasksTableTableManager(
+    _$AppDatabase db,
+    $MaintenanceTasksTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MaintenanceTasksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MaintenanceTasksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MaintenanceTasksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> carId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<int> intervalKm = const Value.absent(),
+                Value<int> lastChangeKm = const Value.absent(),
+              }) => MaintenanceTasksCompanion(
+                id: id,
+                carId: carId,
+                title: title,
+                description: description,
+                intervalKm: intervalKm,
+                lastChangeKm: lastChangeKm,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int carId,
+                required String title,
+                Value<String?> description = const Value.absent(),
+                required int intervalKm,
+                required int lastChangeKm,
+              }) => MaintenanceTasksCompanion.insert(
+                id: id,
+                carId: carId,
+                title: title,
+                description: description,
+                intervalKm: intervalKm,
+                lastChangeKm: lastChangeKm,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$MaintenanceTasksTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({carId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (carId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.carId,
+                                referencedTable:
+                                    $$MaintenanceTasksTableReferences
+                                        ._carIdTable(db),
+                                referencedColumn:
+                                    $$MaintenanceTasksTableReferences
+                                        ._carIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$MaintenanceTasksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MaintenanceTasksTable,
+      MaintenanceTask,
+      $$MaintenanceTasksTableFilterComposer,
+      $$MaintenanceTasksTableOrderingComposer,
+      $$MaintenanceTasksTableAnnotationComposer,
+      $$MaintenanceTasksTableCreateCompanionBuilder,
+      $$MaintenanceTasksTableUpdateCompanionBuilder,
+      (MaintenanceTask, $$MaintenanceTasksTableReferences),
+      MaintenanceTask,
+      PrefetchHooks Function({bool carId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3328,4 +3840,6 @@ class $AppDatabaseManager {
       $$TripPointsTableTableManager(_db, _db.tripPoints);
   $$DtcCacheTableTableManager get dtcCache =>
       $$DtcCacheTableTableManager(_db, _db.dtcCache);
+  $$MaintenanceTasksTableTableManager get maintenanceTasks =>
+      $$MaintenanceTasksTableTableManager(_db, _db.maintenanceTasks);
 }

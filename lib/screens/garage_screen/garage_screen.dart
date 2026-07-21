@@ -30,8 +30,10 @@ class GarageScreen extends StatelessWidget {
           ),
         ],
       ),
+        body: MultiBlocListener(
+            listeners: [
         //  Add a BlocListener to listen for VIN
-        body: BlocListener<BluetoothCubit, BluetoothState>(
+          BlocListener<BluetoothCubit, BluetoothState>(
             listenWhen: (previous, current) {
               //Listen only if a new VIN has appeared and it is not null.
               return previous.connectedVin != current.connectedVin &&
@@ -51,29 +53,36 @@ class GarageScreen extends StatelessWidget {
               // Send an event to CarBloc for creating/choosing the car
               context.read<CarBloc>().add(ProcessScannedVin(vin));
             },
-          child: BlocBuilder<CarBloc, CarState>(
-            builder: (context, state) {
-              if (state.isLoading) {
-                return const Center(child: CircularProgressIndicator());
-              }
-
-              if (state.carsList.isEmpty) {
-                return const EmptyGarageView();
-              }
-
-              return ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: state.carsList.length,
-                itemBuilder: (context, index) {
-                  final car = state.carsList[index];
-                  final isActive = state.activeCar?.id == car.id;
-
-                  return CarCard(car: car, isActive: isActive);
-                },
-              );
-            },
           ),
-      )
+              BlocListener<CarBloc, CarState>(
+                listenWhen: (previous, current) =>
+                previous.activeCar?.id != current.activeCar?.id && current.activeCar != null,
+                listener: (context, state) {
+                  context.read<CarBloc>().add(SyncMileage());
+                },
+              ),
+        ],
+
+        child: BlocBuilder<CarBloc, CarState>(
+          builder: (context, state) {
+            if (state.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (state.carsList.isEmpty) {
+              return const EmptyGarageView();
+            }
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: state.carsList.length,
+              itemBuilder: (context, index) {
+                final car = state.carsList[index];
+                final isActive = state.activeCar?.id == car.id;
+                return CarCard(car: car, isActive: isActive);
+              },
+            );
+          },
+        ),
+      ),
     );
   }
 }
