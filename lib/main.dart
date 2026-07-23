@@ -6,6 +6,7 @@ import 'package:obd_ledger/data/database/database.dart';
 import 'package:obd_ledger/screens/car_details/car_details_screen.dart';
 import 'package:obd_ledger/screens/garage_screen/garage_screen.dart';
 import 'package:obd_ledger/theme/theme_cubit.dart';
+import 'blocs/analytics/analytics_bloc.dart';
 import 'blocs/bluetooth/bluetooth_cubit.dart';
 import 'blocs/car/car_bloc.dart';
 import 'service_locator.dart';
@@ -18,7 +19,7 @@ void main() async {
   await setupLocator();
 
   // --- ДОДАЄМО СІДУВАННЯ БАЗИ ДАНИХ ---
-  await _seedDatabaseIfEmpty();
+  //await _seedDatabaseIfEmpty();
 
   runApp(const ObdLedgerApp());
 }
@@ -52,6 +53,8 @@ Future<void> _seedDatabaseIfEmpty() async {
     debugPrint('Test cars injected successfully!');
   }
 }
+
+
 class ObdLedgerApp extends StatelessWidget {
   const ObdLedgerApp({super.key});
 
@@ -62,6 +65,7 @@ class ObdLedgerApp extends StatelessWidget {
         BlocProvider(create: (_) => getIt<ThemeCubit>()),
         BlocProvider(create: (_) => getIt<CarBloc>()..add(LoadCars())),
         BlocProvider(create: (_) => getIt<BluetoothCubit>()),
+        BlocProvider(create: (_) => getIt<AnalyticsBloc>()),
       ],
       child: BlocBuilder<ThemeCubit, ThemeData>(
         builder: (context, themeData) {

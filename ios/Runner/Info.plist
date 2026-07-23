@@ -6,6 +6,12 @@
     <key>NSBluetoothAlwaysUsageDescription</key>
     <string>We need Bluetooth access to connect to your OBD2 adapter and read vehicle data.</string>
 
+    <!-- permission for gps (Geolocator) -->
+        <key>NSLocationWhenInUseUsageDescription</key>
+        <string>This app needs access to location to track your driving routes and save telemetry data on the map.</string>
+        <key>NSLocationAlwaysUsageDescription</key>
+        <string>This app needs access to location to track your driving routes in the background.</string>
+
     <!-- For backward compatibility with older versions of iOS -->
     <key>NSBluetoothPeripheralUsageDescription</key>
     <string>We need Bluetooth access to connect to your OBD2 adapter.</string>

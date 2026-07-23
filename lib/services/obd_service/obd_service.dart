@@ -120,19 +120,25 @@ class ObdService implements IObdScanner {
   }
 
   @override
-  Future<int> readDistanceSinceCodesCleared() async {
-    String response = await _sendCommand("0131");
+  Future<int?> readDistanceSinceCodesCleared() async {
+    try {
+      String response = await _sendCommand("0131");
 
-    if (response.startsWith("4131") && response.length >= 8) {
-      String hexA = response.substring(4, 6);
-      String hexB = response.substring(6, 8);
+      if (response.startsWith("4131") && response.length >= 8) {
+        String hexA = response.substring(4, 6);
+        String hexB = response.substring(6, 8);
 
-      int a = int.parse(hexA, radix: 16);
-      int b = int.parse(hexB, radix: 16);
+        int a = int.parse(hexA, radix: 16);
+        int b = int.parse(hexB, radix: 16);
 
-      return (a * 256) + b;
+        return (a * 256) + b;
+      }
+      // if response is invalid
+      return null;
+    } catch (e) {
+      // If the adapter has disconnected completely due to a timeout
+      return null;
     }
-    return 0;
   }
 
   @override

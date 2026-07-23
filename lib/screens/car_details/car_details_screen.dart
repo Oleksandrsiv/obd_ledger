@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:obd_ledger/blocs/diagnostic/diagnostic_bloc.dart';
+import 'package:obd_ledger/screens/car_details/tabs/analytics_tab/analytics_tab.dart';
 import 'package:obd_ledger/screens/car_details/tabs/live_dashboard/live_dashboard.dart';
 import 'package:obd_ledger/service_locator.dart';
 
@@ -58,7 +59,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               carId: widget.carId,
             ),
             LiveDashboardTab(carMake: widget.carMake),
-            const Center(child: Text('Trip Analytics', style: TextStyle(fontSize: 20))),
+            AnalyticsTab(),
           ],
         ),
         bottomNavigationBar: NavigationBar(

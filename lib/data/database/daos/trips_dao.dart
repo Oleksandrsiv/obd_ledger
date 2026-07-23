@@ -27,4 +27,8 @@ class TripsDao extends DatabaseAccessor<AppDatabase> with _$TripsDaoMixin {
       ),
     );
   }
+
+  Future<List<Trip>> getTripsForCar(int carId) {
+    return (select(trips)..where((t) => t.carId.equals(carId))).get();
+  }
 }

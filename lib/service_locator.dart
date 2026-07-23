@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:obd_ledger/blocs/analytics/analytics_bloc.dart';
 import 'package:obd_ledger/repositories/dtc_repository.dart';
 import 'package:obd_ledger/services/nhtsa_api/nhtsa_api_client.dart';
 import 'package:obd_ledger/repositories/vehicle_info_repository.dart';
@@ -89,6 +90,10 @@ Future<void> setupLocator() async {
           () => DashboardBloc(getIt<TripRecordingService>()),
     );
   }
+
+    getIt.registerFactory<AnalyticsBloc>(
+          () => AnalyticsBloc(getIt()),
+    );
 
   if (!getIt.isRegistered<MaintenanceBloc>()) {
     getIt.registerFactory<MaintenanceBloc>(

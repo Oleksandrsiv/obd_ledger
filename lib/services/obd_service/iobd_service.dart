@@ -16,7 +16,7 @@ abstract interface class IObdScanner {
 
   Future<bool> clearTroubleCodes();
 
-  Future<int> readDistanceSinceCodesCleared();
+  Future<int?> readDistanceSinceCodesCleared();
 
   /// Real-time requests
   Future<int> readEngineRpm();

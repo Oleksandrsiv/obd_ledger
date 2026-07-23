@@ -73,7 +73,14 @@ class CarBloc extends Bloc<CarEvent, CarState> {
 
     try {
       // Read "Distance since codes cleared" from the adapter
-      int currentObdDistance = await _obdScanner.readDistanceSinceCodesCleared();
+      int? currentObdDistance = await _obdScanner.readDistanceSinceCodesCleared();
+
+      if (currentObdDistance == null) {
+        // If the adapter didn't respond (engine off) — simply exit.
+        // Remove the loading indicator and do not touch the database.
+        emit(state.copyWith(isSyncing: false));
+        return;
+      }
 
       Car car = state.activeCar!;
 

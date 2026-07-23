@@ -1,17 +1,25 @@
 import 'dart:async';
 import 'dart:developer';
+import 'package:drift/drift.dart' as drift;
+
 import '../../data/database/database.dart';
 import '../../data/models/realtime_data_model.dart';
 import '../data/database/daos/trips_dao.dart';
 import 'obd_service/iobd_service.dart';
 
+import 'package:geolocator/geolocator.dart'; // Додаємо геолокатор
+import 'package:drift/drift.dart' as drift; // Додаємо drift для Value()
+
 class TripRecordingService {
   final IObdScanner _obdScanner;
   final TripsDao _tripsDao;
 
-  Timer? _pollingTimer;
+  bool _isPolling = false;
   int? _currentTripId;
   int? _activeCarId;
+
+  StreamSubscription<Position>? _positionSubscription;
+  Position? _currentPosition;
 
   // list for batching
   final List<TripPointsCompanion> _pointsBatch = [];
@@ -28,18 +36,44 @@ class TripRecordingService {
   TripRecordingService(this._obdScanner, this._tripsDao);
 
   void startPolling(int carId) {
-    _activeCarId = carId; 
-    if (_pollingTimer != null) return;
+    _activeCarId = carId;
+    if (_isPolling) return;
 
-    // Start periodic timer for UI
-    _pollingTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      _onTick();
-    });
+    _startLocationTracking();
+
+
+    _isPolling = true;
+    _runPollingLoop();
   }
 
   void stopPolling() {
-    _pollingTimer?.cancel();
-    _pollingTimer = null;
+    _isPolling = false;
+
+    _positionSubscription?.cancel();
+    _positionSubscription = null;
+    _currentPosition = null;
+  }
+
+  Future<void> _startLocationTracking() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) return; // if GPS is off on phone
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) return;
+    }
+
+    if (permission == LocationPermission.deniedForever) return;
+
+    _positionSubscription = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 5,
+      ),
+    ).listen((Position position) {
+      _currentPosition = position;
+    });
   }
 
   Future<void> startRecordingToDatabase() async {
@@ -106,6 +140,8 @@ class TripRecordingService {
             rpm: currentData.rpm,
             throttlePosition: currentData.throttlePosition,
             engineTemp: currentData.coolantTemp,
+            latitude: drift.Value(_currentPosition?.latitude),
+            longitude: drift.Value(_currentPosition?.longitude),
           ));
 
           _lastSavedPoint = currentData;
@@ -140,5 +176,28 @@ class TripRecordingService {
 
     await _tripsDao.insertTripPointsBatch(List.from(_pointsBatch));
     _pointsBatch.clear();
+  }
+
+  Future<void> _runPollingLoop() async {
+    while (_isPolling) {
+      final startTime = DateTime.now();
+
+      // Wait for the COMPLETE completion of all commands to the adapter
+      await _onTick();
+
+      if (!_isPolling) break;
+
+      // Calculate the time spent interacting with the car
+      final elapsed = DateTime.now().difference(startTime);
+
+      // We need a 1-second interval.
+      // If the request took 400ms, we wait another 600ms.
+      // If the request took 1.2 seconds (the adapter was slow), we start the next one immediately.
+      final delay = const Duration(seconds: 1) - elapsed;
+
+      if (delay > Duration.zero) {
+      await Future.delayed(delay);
+      }
+    }
   }
 }
