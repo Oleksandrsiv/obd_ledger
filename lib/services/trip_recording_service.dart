@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:drift/drift.dart' as drift;
-
 import '../../data/database/database.dart';
 import '../../data/models/realtime_data_model.dart';
 import '../data/database/daos/trips_dao.dart';
 import 'obd_service/iobd_service.dart';
 
-import 'package:geolocator/geolocator.dart'; // Додаємо геолокатор
-import 'package:drift/drift.dart' as drift; // Додаємо drift для Value()
+import 'package:geolocator/geolocator.dart';
+import 'package:drift/drift.dart' as drift;
 
 class TripRecordingService {
   final IObdScanner _obdScanner;
@@ -17,6 +16,11 @@ class TripRecordingService {
   bool _isPolling = false;
   int? _currentTripId;
   int? _activeCarId;
+  int _tickCounter = 0;
+  bool _isInitialMileageFetched = false;
+  int? _lastKnownMileage;
+
+  int? get lastKnownMileage => _lastKnownMileage;
 
   StreamSubscription<Position>? _positionSubscription;
   Position? _currentPosition;
@@ -118,6 +122,27 @@ class TripRecordingService {
         throttlePosition: currentThrottle,
         timestamp: DateTime.now(),
       );
+
+      if (currentRpm > 0) {
+        if (!_isInitialMileageFetched || _tickCounter >= 60) {
+
+          int? distance = await _obdScanner.readDistanceSinceCodesCleared();
+
+          if (distance != null) {
+            _lastKnownMileage = distance; // Cache the successful result
+          }
+
+          _isInitialMileageFetched = true;
+          _tickCounter = 0; // Reset the counter after the request
+        }
+
+        _tickCounter++;
+      } else {
+        // If the engine is turned off, we reset the flag for the next trip.
+        // We do NOT reset the _lastKnownMileage variable, because the BLoC needs it for saving!
+        _isInitialMileageFetched = false;
+        _tickCounter = 0;
+      }
 
       _dataController.add(currentData);
 

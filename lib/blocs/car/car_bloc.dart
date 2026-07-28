@@ -73,7 +73,7 @@ class CarBloc extends Bloc<CarEvent, CarState> {
 
     try {
       // Read "Distance since codes cleared" from the adapter
-      int? currentObdDistance = await _obdScanner.readDistanceSinceCodesCleared();
+      int? currentObdDistance = _tripRecordingService.lastKnownMileage;
 
       if (currentObdDistance == null) {
         // If the adapter didn't respond (engine off) — simply exit.
