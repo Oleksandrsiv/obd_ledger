@@ -26,3 +26,10 @@ class ProcessScannedVin extends CarEvent {
 
   ProcessScannedVin(this.vin);
 }
+
+class RenameCar extends CarEvent {
+  final int carId;
+  final String newName;
+
+  RenameCar(this.carId, this.newName);
+}

@@ -24,6 +24,7 @@ class CarBloc extends Bloc<CarEvent, CarState> {
     on<SelectCar>(_onSelectCar);
     on<SyncMileage>(_onSyncMileage);
     on<ProcessScannedVin>(_onProcessScannedVin);
+    on<RenameCar>(_onRenameCar);
 
     _tripStatusSubscription = _tripRecordingService.isTripActiveStream.listen((isTripActive) {
       if (!isTripActive) {
@@ -168,6 +169,21 @@ class CarBloc extends Bloc<CarEvent, CarState> {
           errorMessage: "Error processing VIN: $e",
           isLoading: false
       ));
+    }
+  }
+
+  Future<void> _onRenameCar(RenameCar event, Emitter<CarState> emit) async {
+    try {
+      final carToRename = state.carsList.firstWhere((c) => c.id == event.carId);
+
+      final updatedCar = carToRename.copyWith(name: drift.Value(event.newName));
+
+      await _carsDao.insertOrUpdateCar(updatedCar);
+
+      add(LoadCars());
+
+    } catch (e) {
+      emit(state.copyWith(errorMessage: "Error renaming car: $e"));
     }
   }
 }

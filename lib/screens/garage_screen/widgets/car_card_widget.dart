@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:obd_ledger/screens/garage_screen/widgets/rename_car_dialog_window.dart';
 import '../../../blocs/car/car_bloc.dart';
 import '../../car_details/car_details_screen.dart';
 
@@ -73,9 +74,17 @@ class CarCard extends StatelessWidget {
                   ),
                 ],
               ),
-            ]
+            ],
+            IconButton(
+              icon: const Icon(Icons.edit, size: 20),
+              color: Colors.grey,
+              onPressed: () {
+                showRenameCarDialog(context, car);
+              },
+            ),
           ],
         ),
+
         onTap: () {
           context.read<CarBloc>().add(SelectCar(car.id));
 
