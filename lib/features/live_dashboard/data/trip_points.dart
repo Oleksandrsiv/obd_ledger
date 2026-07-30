@@ -1,0 +1,17 @@
+import 'package:drift/drift.dart';
+import '../../analytics/data/trips.dart';
+
+class TripPoints extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  // Foreign key to the Trips table
+  IntColumn get tripId => integer().references(Trips, #id)();
+
+  IntColumn get timestamp => integer()();
+  IntColumn get speed => integer()();
+  IntColumn get rpm => integer()();
+  IntColumn get throttlePosition => integer()();
+  IntColumn get engineTemp => integer()();
+
+  RealColumn get latitude => real().nullable()();
+  RealColumn get longitude => real().nullable()();
+}
