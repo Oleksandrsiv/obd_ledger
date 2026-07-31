@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../../../core/database/database.dart';
+import '../../../core/service_locator.dart';
+import '../data/trips_dao.dart';
+import '../sessions/screens/session_player_screen.dart';
 import '../utils/daily_analytics_helper.dart';
+
 
 class DailyStatsList extends StatelessWidget {
   final List<Trip> selectedDayTrips;
@@ -82,8 +86,14 @@ class DailyStatsList extends StatelessWidget {
               subtitle: Text('Distance: ${trip.totalDistance} km'),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Session details coming soon!'), duration: Duration(seconds: 1)),
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SessionPlayerScreen(
+                      tripId: trip.id,
+                      tripsDao: getIt<TripsDao>(),
+                    ),
+                  ),
                 );
               },
             ),
