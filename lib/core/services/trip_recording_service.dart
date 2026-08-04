@@ -23,6 +23,17 @@ class TripRecordingService {
   double? _smoothedFuelLevel;
   final double _fuelSmoothingAlpha = 0.05; // 5% confidence in new data, 95% in old
 
+  // CACHE FOR SLOW PARAMETERS
+  int _cachedCoolantTemp = 0;
+  int _cachedEngineOilTemp = 0;
+  int _cachedIat = 0;
+  int _cachedFuelLevel = 0;
+  String _cachedBattery = "--";
+
+  // Counter for slow loop
+  int _slowPollCounter = 0;
+  final int _slowPollInterval = 5; // We poll slow parameters once every 5 cycles (approximately every 5 seconds)
+
   int? get lastKnownMileage => _lastKnownMileage;
 
   StreamSubscription<Position>? _positionSubscription;
@@ -142,40 +153,46 @@ class TripRecordingService {
     try {
       int currentRpm = await _obdScanner.readEngineRpm();
       int currentSpeed = await _obdScanner.readVehicleSpeed();
-      int currentCoolantTemp = await _obdScanner.readCoolantTemp();
-      int currentEngineOilTemp = await _obdScanner.readEngineOilTemp();
       int currentLoad = await _obdScanner.readEngineLoad();
       int currentThrottle = await _obdScanner.readThrottlePosition();
-
-      int currentIat = await _obdScanner.readIntakeAirTemp();
       double currentMaf = await _obdScanner.readMAF();
-      String currentBattery = await _obdScanner.readBatteryVoltage();
 
-      int rawFuel = await _obdScanner.readFuelLevel();
-      int finalFuelToSave = 0;
 
-      if (rawFuel > 0) {
-        if (_smoothedFuelLevel == null) {
-          // On the first read, we trust the data 100% to set a starting point
-          _smoothedFuelLevel = rawFuel.toDouble();
-        } else {
-          _smoothedFuelLevel = (_fuelSmoothingAlpha * rawFuel) + ((1 - _fuelSmoothingAlpha) * _smoothedFuelLevel!);
+      _slowPollCounter++;
+      if (_slowPollCounter >= _slowPollInterval) {
+        _cachedCoolantTemp = await _obdScanner.readCoolantTemp();
+        _cachedEngineOilTemp = await _obdScanner.readEngineOilTemp();
+        _cachedIat = await _obdScanner.readIntakeAirTemp();
+        _cachedBattery = await _obdScanner.readBatteryVoltage();
+
+        int rawFuel = await _obdScanner.readFuelLevel();
+
+        if (rawFuel > 0) {
+          if (_smoothedFuelLevel == null) {
+            // On the first read, we trust the data 100% to set a starting point
+            _smoothedFuelLevel = rawFuel.toDouble();
+          } else {
+            _smoothedFuelLevel = (_fuelSmoothingAlpha * rawFuel) + ((1 - _fuelSmoothingAlpha) * _smoothedFuelLevel!);
+          }
+          _cachedFuelLevel = _smoothedFuelLevel!.round();
         }
-        finalFuelToSave = _smoothedFuelLevel!.round();
+
+        _slowPollCounter = 0;
       }
 
 
       final currentData = RealtimeData(
         speed: currentSpeed,
         rpm: currentRpm,
-        coolantTemp: currentCoolantTemp,
-        engineOilTemp: currentEngineOilTemp,
         engineLoad: currentLoad,
         throttlePosition: currentThrottle,
-        intakeAirTemp: currentIat,
         maf: currentMaf,
-        fuelLevel: finalFuelToSave,
-        batteryVoltage: currentBattery,
+
+        coolantTemp: _cachedCoolantTemp,
+        engineOilTemp: _cachedEngineOilTemp,
+        intakeAirTemp: _cachedIat,
+        fuelLevel: _cachedFuelLevel,
+        batteryVoltage: _cachedBattery,
         timestamp: DateTime.now(),
       );
 
