@@ -18,8 +18,10 @@ class TripRecordingService {
   int _tickCounter = 0;
   bool _isInitialMileageFetched = false;
   int? _lastKnownMileage;
-
   int? _startTripMileage;
+
+  double? _smoothedFuelLevel;
+  final double _fuelSmoothingAlpha = 0.05; // 5% confidence in new data, 95% in old
 
   int? get lastKnownMileage => _lastKnownMileage;
 
@@ -92,6 +94,7 @@ class TripRecordingService {
 
     _lastSavedPoint = null;
     _pointsBatch.clear();
+    _smoothedFuelLevel = null;
   }
 
   Future<void> stopRecordingToDatabase() async {
@@ -139,16 +142,40 @@ class TripRecordingService {
     try {
       int currentRpm = await _obdScanner.readEngineRpm();
       int currentSpeed = await _obdScanner.readVehicleSpeed();
-      int currentTemp = await _obdScanner.readCoolantTemp();
+      int currentCoolantTemp = await _obdScanner.readCoolantTemp();
+      int currentEngineOilTemp = await _obdScanner.readEngineOilTemp();
       int currentLoad = await _obdScanner.readEngineLoad();
       int currentThrottle = await _obdScanner.readThrottlePosition();
+
+      int currentIat = await _obdScanner.readIntakeAirTemp();
+      double currentMaf = await _obdScanner.readMAF();
+      String currentBattery = await _obdScanner.readBatteryVoltage();
+
+      int rawFuel = await _obdScanner.readFuelLevel();
+      int finalFuelToSave = 0;
+
+      if (rawFuel > 0) {
+        if (_smoothedFuelLevel == null) {
+          // On the first read, we trust the data 100% to set a starting point
+          _smoothedFuelLevel = rawFuel.toDouble();
+        } else {
+          _smoothedFuelLevel = (_fuelSmoothingAlpha * rawFuel) + ((1 - _fuelSmoothingAlpha) * _smoothedFuelLevel!);
+        }
+        finalFuelToSave = _smoothedFuelLevel!.round();
+      }
+
 
       final currentData = RealtimeData(
         speed: currentSpeed,
         rpm: currentRpm,
-        coolantTemp: currentTemp,
+        coolantTemp: currentCoolantTemp,
+        engineOilTemp: currentEngineOilTemp,
         engineLoad: currentLoad,
         throttlePosition: currentThrottle,
+        intakeAirTemp: currentIat,
+        maf: currentMaf,
+        fuelLevel: finalFuelToSave,
+        batteryVoltage: currentBattery,
         timestamp: DateTime.now(),
       );
 
@@ -194,7 +221,11 @@ class TripRecordingService {
             speed: currentData.speed,
             rpm: currentData.rpm,
             throttlePosition: currentData.throttlePosition,
-            engineTemp: currentData.coolantTemp,
+            coolantTemp: currentData.coolantTemp,
+            engineOilTemp: drift.Value(currentData.engineOilTemp),
+            intakeAirTemp: drift.Value(currentData.intakeAirTemp),
+            fuelLevel: drift.Value(currentData.fuelLevel),
+            maf: drift.Value(currentData.maf),
             latitude: drift.Value(_currentPosition?.latitude),
             longitude: drift.Value(_currentPosition?.longitude),
           ));

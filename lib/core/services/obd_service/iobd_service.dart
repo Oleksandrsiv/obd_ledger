@@ -25,9 +25,19 @@ abstract interface class IObdScanner {
 
   Future<int> readCoolantTemp();
 
+  Future<int> readEngineOilTemp();
+
   Future<int> readThrottlePosition();
 
   Future<int> readEngineLoad();
+
+  Future<int> readIntakeAirTemp();
+
+  Future<double> readMAF();
+
+  Future<int> readFuelLevel();
+
+  Future<String> readBatteryVoltage();
 
   /// for raw requests
   Future<String> sendRawCommand(String hexCommand);

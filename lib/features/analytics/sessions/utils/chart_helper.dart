@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../../core/database/database.dart';
 
-enum YAxisType { speed, rpm, temperature }
+enum YAxisType { speed, rpm, coolantTemp, oilTemp, intakeAirTemp, maf, fuelLevel }
 
 class ChartHelper {
   static List<FlSpot> generateSpots(
@@ -23,8 +23,20 @@ class ChartHelper {
         case YAxisType.rpm:
           yValue = point.rpm.toDouble();
           break;
-        case YAxisType.temperature:
-          yValue = point.engineTemp.toDouble();
+        case YAxisType.coolantTemp:
+          yValue = point.coolantTemp.toDouble();
+          break;
+        case YAxisType.oilTemp:
+          yValue = (point.engineOilTemp ?? 0).toDouble();
+          break;
+        case YAxisType.intakeAirTemp:
+          yValue = (point.intakeAirTemp ?? 0).toDouble();
+          break;
+        case YAxisType.maf:
+          yValue = point.maf ?? 0.0;
+          break;
+        case YAxisType.fuelLevel:
+          yValue = (point.fuelLevel ?? 0).toDouble();
           break;
       }
 
@@ -35,11 +47,19 @@ class ChartHelper {
   static Color getLineColor(YAxisType yType, ColorScheme colorScheme) {
     switch (yType) {
       case YAxisType.speed:
-        return colorScheme.primary;
+        return Colors.blue;
       case YAxisType.rpm:
-        return colorScheme.secondary;
-      case YAxisType.temperature:
-        return colorScheme.error;
+        return Colors.redAccent;
+      case YAxisType.coolantTemp:
+        return Colors.cyan;
+      case YAxisType.oilTemp:
+        return Colors.orange;
+      case YAxisType.intakeAirTemp:
+        return Colors.teal;
+      case YAxisType.maf:
+        return Colors.purple;
+      case YAxisType.fuelLevel:
+        return Colors.green;
     }
   }
 }

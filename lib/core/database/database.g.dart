@@ -964,12 +964,12 @@ class $TripPointsTable extends TripPoints
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _engineTempMeta = const VerificationMeta(
-    'engineTemp',
+  static const VerificationMeta _coolantTempMeta = const VerificationMeta(
+    'coolantTemp',
   );
   @override
-  late final GeneratedColumn<int> engineTemp = GeneratedColumn<int>(
-    'engine_temp',
+  late final GeneratedColumn<int> coolantTemp = GeneratedColumn<int>(
+    'coolant_temp',
     aliasedName,
     false,
     type: DriftSqlType.int,
@@ -997,6 +997,48 @@ class $TripPointsTable extends TripPoints
     type: DriftSqlType.double,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _engineOilTempMeta = const VerificationMeta(
+    'engineOilTemp',
+  );
+  @override
+  late final GeneratedColumn<int> engineOilTemp = GeneratedColumn<int>(
+    'engine_oil_temp',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _intakeAirTempMeta = const VerificationMeta(
+    'intakeAirTemp',
+  );
+  @override
+  late final GeneratedColumn<int> intakeAirTemp = GeneratedColumn<int>(
+    'intake_air_temp',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _fuelLevelMeta = const VerificationMeta(
+    'fuelLevel',
+  );
+  @override
+  late final GeneratedColumn<int> fuelLevel = GeneratedColumn<int>(
+    'fuel_level',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _mafMeta = const VerificationMeta('maf');
+  @override
+  late final GeneratedColumn<double> maf = GeneratedColumn<double>(
+    'maf',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1005,9 +1047,13 @@ class $TripPointsTable extends TripPoints
     speed,
     rpm,
     throttlePosition,
-    engineTemp,
+    coolantTemp,
     latitude,
     longitude,
+    engineOilTemp,
+    intakeAirTemp,
+    fuelLevel,
+    maf,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1067,13 +1113,16 @@ class $TripPointsTable extends TripPoints
     } else if (isInserting) {
       context.missing(_throttlePositionMeta);
     }
-    if (data.containsKey('engine_temp')) {
+    if (data.containsKey('coolant_temp')) {
       context.handle(
-        _engineTempMeta,
-        engineTemp.isAcceptableOrUnknown(data['engine_temp']!, _engineTempMeta),
+        _coolantTempMeta,
+        coolantTemp.isAcceptableOrUnknown(
+          data['coolant_temp']!,
+          _coolantTempMeta,
+        ),
       );
     } else if (isInserting) {
-      context.missing(_engineTempMeta);
+      context.missing(_coolantTempMeta);
     }
     if (data.containsKey('latitude')) {
       context.handle(
@@ -1085,6 +1134,36 @@ class $TripPointsTable extends TripPoints
       context.handle(
         _longitudeMeta,
         longitude.isAcceptableOrUnknown(data['longitude']!, _longitudeMeta),
+      );
+    }
+    if (data.containsKey('engine_oil_temp')) {
+      context.handle(
+        _engineOilTempMeta,
+        engineOilTemp.isAcceptableOrUnknown(
+          data['engine_oil_temp']!,
+          _engineOilTempMeta,
+        ),
+      );
+    }
+    if (data.containsKey('intake_air_temp')) {
+      context.handle(
+        _intakeAirTempMeta,
+        intakeAirTemp.isAcceptableOrUnknown(
+          data['intake_air_temp']!,
+          _intakeAirTempMeta,
+        ),
+      );
+    }
+    if (data.containsKey('fuel_level')) {
+      context.handle(
+        _fuelLevelMeta,
+        fuelLevel.isAcceptableOrUnknown(data['fuel_level']!, _fuelLevelMeta),
+      );
+    }
+    if (data.containsKey('maf')) {
+      context.handle(
+        _mafMeta,
+        maf.isAcceptableOrUnknown(data['maf']!, _mafMeta),
       );
     }
     return context;
@@ -1120,9 +1199,9 @@ class $TripPointsTable extends TripPoints
         DriftSqlType.int,
         data['${effectivePrefix}throttle_position'],
       )!,
-      engineTemp: attachedDatabase.typeMapping.read(
+      coolantTemp: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}engine_temp'],
+        data['${effectivePrefix}coolant_temp'],
       )!,
       latitude: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
@@ -1131,6 +1210,22 @@ class $TripPointsTable extends TripPoints
       longitude: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}longitude'],
+      ),
+      engineOilTemp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}engine_oil_temp'],
+      ),
+      intakeAirTemp: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}intake_air_temp'],
+      ),
+      fuelLevel: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}fuel_level'],
+      ),
+      maf: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}maf'],
       ),
     );
   }
@@ -1148,9 +1243,13 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
   final int speed;
   final int rpm;
   final int throttlePosition;
-  final int engineTemp;
+  final int coolantTemp;
   final double? latitude;
   final double? longitude;
+  final int? engineOilTemp;
+  final int? intakeAirTemp;
+  final int? fuelLevel;
+  final double? maf;
   const TripPoint({
     required this.id,
     required this.tripId,
@@ -1158,9 +1257,13 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
     required this.speed,
     required this.rpm,
     required this.throttlePosition,
-    required this.engineTemp,
+    required this.coolantTemp,
     this.latitude,
     this.longitude,
+    this.engineOilTemp,
+    this.intakeAirTemp,
+    this.fuelLevel,
+    this.maf,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1171,12 +1274,24 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
     map['speed'] = Variable<int>(speed);
     map['rpm'] = Variable<int>(rpm);
     map['throttle_position'] = Variable<int>(throttlePosition);
-    map['engine_temp'] = Variable<int>(engineTemp);
+    map['coolant_temp'] = Variable<int>(coolantTemp);
     if (!nullToAbsent || latitude != null) {
       map['latitude'] = Variable<double>(latitude);
     }
     if (!nullToAbsent || longitude != null) {
       map['longitude'] = Variable<double>(longitude);
+    }
+    if (!nullToAbsent || engineOilTemp != null) {
+      map['engine_oil_temp'] = Variable<int>(engineOilTemp);
+    }
+    if (!nullToAbsent || intakeAirTemp != null) {
+      map['intake_air_temp'] = Variable<int>(intakeAirTemp);
+    }
+    if (!nullToAbsent || fuelLevel != null) {
+      map['fuel_level'] = Variable<int>(fuelLevel);
+    }
+    if (!nullToAbsent || maf != null) {
+      map['maf'] = Variable<double>(maf);
     }
     return map;
   }
@@ -1189,13 +1304,23 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
       speed: Value(speed),
       rpm: Value(rpm),
       throttlePosition: Value(throttlePosition),
-      engineTemp: Value(engineTemp),
+      coolantTemp: Value(coolantTemp),
       latitude: latitude == null && nullToAbsent
           ? const Value.absent()
           : Value(latitude),
       longitude: longitude == null && nullToAbsent
           ? const Value.absent()
           : Value(longitude),
+      engineOilTemp: engineOilTemp == null && nullToAbsent
+          ? const Value.absent()
+          : Value(engineOilTemp),
+      intakeAirTemp: intakeAirTemp == null && nullToAbsent
+          ? const Value.absent()
+          : Value(intakeAirTemp),
+      fuelLevel: fuelLevel == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fuelLevel),
+      maf: maf == null && nullToAbsent ? const Value.absent() : Value(maf),
     );
   }
 
@@ -1211,9 +1336,13 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
       speed: serializer.fromJson<int>(json['speed']),
       rpm: serializer.fromJson<int>(json['rpm']),
       throttlePosition: serializer.fromJson<int>(json['throttlePosition']),
-      engineTemp: serializer.fromJson<int>(json['engineTemp']),
+      coolantTemp: serializer.fromJson<int>(json['coolantTemp']),
       latitude: serializer.fromJson<double?>(json['latitude']),
       longitude: serializer.fromJson<double?>(json['longitude']),
+      engineOilTemp: serializer.fromJson<int?>(json['engineOilTemp']),
+      intakeAirTemp: serializer.fromJson<int?>(json['intakeAirTemp']),
+      fuelLevel: serializer.fromJson<int?>(json['fuelLevel']),
+      maf: serializer.fromJson<double?>(json['maf']),
     );
   }
   @override
@@ -1226,9 +1355,13 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
       'speed': serializer.toJson<int>(speed),
       'rpm': serializer.toJson<int>(rpm),
       'throttlePosition': serializer.toJson<int>(throttlePosition),
-      'engineTemp': serializer.toJson<int>(engineTemp),
+      'coolantTemp': serializer.toJson<int>(coolantTemp),
       'latitude': serializer.toJson<double?>(latitude),
       'longitude': serializer.toJson<double?>(longitude),
+      'engineOilTemp': serializer.toJson<int?>(engineOilTemp),
+      'intakeAirTemp': serializer.toJson<int?>(intakeAirTemp),
+      'fuelLevel': serializer.toJson<int?>(fuelLevel),
+      'maf': serializer.toJson<double?>(maf),
     };
   }
 
@@ -1239,9 +1372,13 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
     int? speed,
     int? rpm,
     int? throttlePosition,
-    int? engineTemp,
+    int? coolantTemp,
     Value<double?> latitude = const Value.absent(),
     Value<double?> longitude = const Value.absent(),
+    Value<int?> engineOilTemp = const Value.absent(),
+    Value<int?> intakeAirTemp = const Value.absent(),
+    Value<int?> fuelLevel = const Value.absent(),
+    Value<double?> maf = const Value.absent(),
   }) => TripPoint(
     id: id ?? this.id,
     tripId: tripId ?? this.tripId,
@@ -1249,9 +1386,17 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
     speed: speed ?? this.speed,
     rpm: rpm ?? this.rpm,
     throttlePosition: throttlePosition ?? this.throttlePosition,
-    engineTemp: engineTemp ?? this.engineTemp,
+    coolantTemp: coolantTemp ?? this.coolantTemp,
     latitude: latitude.present ? latitude.value : this.latitude,
     longitude: longitude.present ? longitude.value : this.longitude,
+    engineOilTemp: engineOilTemp.present
+        ? engineOilTemp.value
+        : this.engineOilTemp,
+    intakeAirTemp: intakeAirTemp.present
+        ? intakeAirTemp.value
+        : this.intakeAirTemp,
+    fuelLevel: fuelLevel.present ? fuelLevel.value : this.fuelLevel,
+    maf: maf.present ? maf.value : this.maf,
   );
   TripPoint copyWithCompanion(TripPointsCompanion data) {
     return TripPoint(
@@ -1263,11 +1408,19 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
       throttlePosition: data.throttlePosition.present
           ? data.throttlePosition.value
           : this.throttlePosition,
-      engineTemp: data.engineTemp.present
-          ? data.engineTemp.value
-          : this.engineTemp,
+      coolantTemp: data.coolantTemp.present
+          ? data.coolantTemp.value
+          : this.coolantTemp,
       latitude: data.latitude.present ? data.latitude.value : this.latitude,
       longitude: data.longitude.present ? data.longitude.value : this.longitude,
+      engineOilTemp: data.engineOilTemp.present
+          ? data.engineOilTemp.value
+          : this.engineOilTemp,
+      intakeAirTemp: data.intakeAirTemp.present
+          ? data.intakeAirTemp.value
+          : this.intakeAirTemp,
+      fuelLevel: data.fuelLevel.present ? data.fuelLevel.value : this.fuelLevel,
+      maf: data.maf.present ? data.maf.value : this.maf,
     );
   }
 
@@ -1280,9 +1433,13 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
           ..write('speed: $speed, ')
           ..write('rpm: $rpm, ')
           ..write('throttlePosition: $throttlePosition, ')
-          ..write('engineTemp: $engineTemp, ')
+          ..write('coolantTemp: $coolantTemp, ')
           ..write('latitude: $latitude, ')
-          ..write('longitude: $longitude')
+          ..write('longitude: $longitude, ')
+          ..write('engineOilTemp: $engineOilTemp, ')
+          ..write('intakeAirTemp: $intakeAirTemp, ')
+          ..write('fuelLevel: $fuelLevel, ')
+          ..write('maf: $maf')
           ..write(')'))
         .toString();
   }
@@ -1295,9 +1452,13 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
     speed,
     rpm,
     throttlePosition,
-    engineTemp,
+    coolantTemp,
     latitude,
     longitude,
+    engineOilTemp,
+    intakeAirTemp,
+    fuelLevel,
+    maf,
   );
   @override
   bool operator ==(Object other) =>
@@ -1309,9 +1470,13 @@ class TripPoint extends DataClass implements Insertable<TripPoint> {
           other.speed == this.speed &&
           other.rpm == this.rpm &&
           other.throttlePosition == this.throttlePosition &&
-          other.engineTemp == this.engineTemp &&
+          other.coolantTemp == this.coolantTemp &&
           other.latitude == this.latitude &&
-          other.longitude == this.longitude);
+          other.longitude == this.longitude &&
+          other.engineOilTemp == this.engineOilTemp &&
+          other.intakeAirTemp == this.intakeAirTemp &&
+          other.fuelLevel == this.fuelLevel &&
+          other.maf == this.maf);
 }
 
 class TripPointsCompanion extends UpdateCompanion<TripPoint> {
@@ -1321,9 +1486,13 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
   final Value<int> speed;
   final Value<int> rpm;
   final Value<int> throttlePosition;
-  final Value<int> engineTemp;
+  final Value<int> coolantTemp;
   final Value<double?> latitude;
   final Value<double?> longitude;
+  final Value<int?> engineOilTemp;
+  final Value<int?> intakeAirTemp;
+  final Value<int?> fuelLevel;
+  final Value<double?> maf;
   const TripPointsCompanion({
     this.id = const Value.absent(),
     this.tripId = const Value.absent(),
@@ -1331,9 +1500,13 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
     this.speed = const Value.absent(),
     this.rpm = const Value.absent(),
     this.throttlePosition = const Value.absent(),
-    this.engineTemp = const Value.absent(),
+    this.coolantTemp = const Value.absent(),
     this.latitude = const Value.absent(),
     this.longitude = const Value.absent(),
+    this.engineOilTemp = const Value.absent(),
+    this.intakeAirTemp = const Value.absent(),
+    this.fuelLevel = const Value.absent(),
+    this.maf = const Value.absent(),
   });
   TripPointsCompanion.insert({
     this.id = const Value.absent(),
@@ -1342,15 +1515,19 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
     required int speed,
     required int rpm,
     required int throttlePosition,
-    required int engineTemp,
+    required int coolantTemp,
     this.latitude = const Value.absent(),
     this.longitude = const Value.absent(),
+    this.engineOilTemp = const Value.absent(),
+    this.intakeAirTemp = const Value.absent(),
+    this.fuelLevel = const Value.absent(),
+    this.maf = const Value.absent(),
   }) : tripId = Value(tripId),
        timestamp = Value(timestamp),
        speed = Value(speed),
        rpm = Value(rpm),
        throttlePosition = Value(throttlePosition),
-       engineTemp = Value(engineTemp);
+       coolantTemp = Value(coolantTemp);
   static Insertable<TripPoint> custom({
     Expression<int>? id,
     Expression<int>? tripId,
@@ -1358,9 +1535,13 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
     Expression<int>? speed,
     Expression<int>? rpm,
     Expression<int>? throttlePosition,
-    Expression<int>? engineTemp,
+    Expression<int>? coolantTemp,
     Expression<double>? latitude,
     Expression<double>? longitude,
+    Expression<int>? engineOilTemp,
+    Expression<int>? intakeAirTemp,
+    Expression<int>? fuelLevel,
+    Expression<double>? maf,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1369,9 +1550,13 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
       if (speed != null) 'speed': speed,
       if (rpm != null) 'rpm': rpm,
       if (throttlePosition != null) 'throttle_position': throttlePosition,
-      if (engineTemp != null) 'engine_temp': engineTemp,
+      if (coolantTemp != null) 'coolant_temp': coolantTemp,
       if (latitude != null) 'latitude': latitude,
       if (longitude != null) 'longitude': longitude,
+      if (engineOilTemp != null) 'engine_oil_temp': engineOilTemp,
+      if (intakeAirTemp != null) 'intake_air_temp': intakeAirTemp,
+      if (fuelLevel != null) 'fuel_level': fuelLevel,
+      if (maf != null) 'maf': maf,
     });
   }
 
@@ -1382,9 +1567,13 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
     Value<int>? speed,
     Value<int>? rpm,
     Value<int>? throttlePosition,
-    Value<int>? engineTemp,
+    Value<int>? coolantTemp,
     Value<double?>? latitude,
     Value<double?>? longitude,
+    Value<int?>? engineOilTemp,
+    Value<int?>? intakeAirTemp,
+    Value<int?>? fuelLevel,
+    Value<double?>? maf,
   }) {
     return TripPointsCompanion(
       id: id ?? this.id,
@@ -1393,9 +1582,13 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
       speed: speed ?? this.speed,
       rpm: rpm ?? this.rpm,
       throttlePosition: throttlePosition ?? this.throttlePosition,
-      engineTemp: engineTemp ?? this.engineTemp,
+      coolantTemp: coolantTemp ?? this.coolantTemp,
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
+      engineOilTemp: engineOilTemp ?? this.engineOilTemp,
+      intakeAirTemp: intakeAirTemp ?? this.intakeAirTemp,
+      fuelLevel: fuelLevel ?? this.fuelLevel,
+      maf: maf ?? this.maf,
     );
   }
 
@@ -1420,14 +1613,26 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
     if (throttlePosition.present) {
       map['throttle_position'] = Variable<int>(throttlePosition.value);
     }
-    if (engineTemp.present) {
-      map['engine_temp'] = Variable<int>(engineTemp.value);
+    if (coolantTemp.present) {
+      map['coolant_temp'] = Variable<int>(coolantTemp.value);
     }
     if (latitude.present) {
       map['latitude'] = Variable<double>(latitude.value);
     }
     if (longitude.present) {
       map['longitude'] = Variable<double>(longitude.value);
+    }
+    if (engineOilTemp.present) {
+      map['engine_oil_temp'] = Variable<int>(engineOilTemp.value);
+    }
+    if (intakeAirTemp.present) {
+      map['intake_air_temp'] = Variable<int>(intakeAirTemp.value);
+    }
+    if (fuelLevel.present) {
+      map['fuel_level'] = Variable<int>(fuelLevel.value);
+    }
+    if (maf.present) {
+      map['maf'] = Variable<double>(maf.value);
     }
     return map;
   }
@@ -1441,9 +1646,13 @@ class TripPointsCompanion extends UpdateCompanion<TripPoint> {
           ..write('speed: $speed, ')
           ..write('rpm: $rpm, ')
           ..write('throttlePosition: $throttlePosition, ')
-          ..write('engineTemp: $engineTemp, ')
+          ..write('coolantTemp: $coolantTemp, ')
           ..write('latitude: $latitude, ')
-          ..write('longitude: $longitude')
+          ..write('longitude: $longitude, ')
+          ..write('engineOilTemp: $engineOilTemp, ')
+          ..write('intakeAirTemp: $intakeAirTemp, ')
+          ..write('fuelLevel: $fuelLevel, ')
+          ..write('maf: $maf')
           ..write(')'))
         .toString();
   }
@@ -2956,9 +3165,13 @@ typedef $$TripPointsTableCreateCompanionBuilder =
       required int speed,
       required int rpm,
       required int throttlePosition,
-      required int engineTemp,
+      required int coolantTemp,
       Value<double?> latitude,
       Value<double?> longitude,
+      Value<int?> engineOilTemp,
+      Value<int?> intakeAirTemp,
+      Value<int?> fuelLevel,
+      Value<double?> maf,
     });
 typedef $$TripPointsTableUpdateCompanionBuilder =
     TripPointsCompanion Function({
@@ -2968,9 +3181,13 @@ typedef $$TripPointsTableUpdateCompanionBuilder =
       Value<int> speed,
       Value<int> rpm,
       Value<int> throttlePosition,
-      Value<int> engineTemp,
+      Value<int> coolantTemp,
       Value<double?> latitude,
       Value<double?> longitude,
+      Value<int?> engineOilTemp,
+      Value<int?> intakeAirTemp,
+      Value<int?> fuelLevel,
+      Value<double?> maf,
     });
 
 final class $$TripPointsTableReferences
@@ -3029,8 +3246,8 @@ class $$TripPointsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get engineTemp => $composableBuilder(
-    column: $table.engineTemp,
+  ColumnFilters<int> get coolantTemp => $composableBuilder(
+    column: $table.coolantTemp,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3041,6 +3258,26 @@ class $$TripPointsTableFilterComposer
 
   ColumnFilters<double> get longitude => $composableBuilder(
     column: $table.longitude,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get engineOilTemp => $composableBuilder(
+    column: $table.engineOilTemp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get intakeAirTemp => $composableBuilder(
+    column: $table.intakeAirTemp,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get fuelLevel => $composableBuilder(
+    column: $table.fuelLevel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get maf => $composableBuilder(
+    column: $table.maf,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3102,8 +3339,8 @@ class $$TripPointsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get engineTemp => $composableBuilder(
-    column: $table.engineTemp,
+  ColumnOrderings<int> get coolantTemp => $composableBuilder(
+    column: $table.coolantTemp,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3114,6 +3351,26 @@ class $$TripPointsTableOrderingComposer
 
   ColumnOrderings<double> get longitude => $composableBuilder(
     column: $table.longitude,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get engineOilTemp => $composableBuilder(
+    column: $table.engineOilTemp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get intakeAirTemp => $composableBuilder(
+    column: $table.intakeAirTemp,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fuelLevel => $composableBuilder(
+    column: $table.fuelLevel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get maf => $composableBuilder(
+    column: $table.maf,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3167,8 +3424,8 @@ class $$TripPointsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get engineTemp => $composableBuilder(
-    column: $table.engineTemp,
+  GeneratedColumn<int> get coolantTemp => $composableBuilder(
+    column: $table.coolantTemp,
     builder: (column) => column,
   );
 
@@ -3177,6 +3434,22 @@ class $$TripPointsTableAnnotationComposer
 
   GeneratedColumn<double> get longitude =>
       $composableBuilder(column: $table.longitude, builder: (column) => column);
+
+  GeneratedColumn<int> get engineOilTemp => $composableBuilder(
+    column: $table.engineOilTemp,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get intakeAirTemp => $composableBuilder(
+    column: $table.intakeAirTemp,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get fuelLevel =>
+      $composableBuilder(column: $table.fuelLevel, builder: (column) => column);
+
+  GeneratedColumn<double> get maf =>
+      $composableBuilder(column: $table.maf, builder: (column) => column);
 
   $$TripsTableAnnotationComposer get tripId {
     final $$TripsTableAnnotationComposer composer = $composerBuilder(
@@ -3236,9 +3509,13 @@ class $$TripPointsTableTableManager
                 Value<int> speed = const Value.absent(),
                 Value<int> rpm = const Value.absent(),
                 Value<int> throttlePosition = const Value.absent(),
-                Value<int> engineTemp = const Value.absent(),
+                Value<int> coolantTemp = const Value.absent(),
                 Value<double?> latitude = const Value.absent(),
                 Value<double?> longitude = const Value.absent(),
+                Value<int?> engineOilTemp = const Value.absent(),
+                Value<int?> intakeAirTemp = const Value.absent(),
+                Value<int?> fuelLevel = const Value.absent(),
+                Value<double?> maf = const Value.absent(),
               }) => TripPointsCompanion(
                 id: id,
                 tripId: tripId,
@@ -3246,9 +3523,13 @@ class $$TripPointsTableTableManager
                 speed: speed,
                 rpm: rpm,
                 throttlePosition: throttlePosition,
-                engineTemp: engineTemp,
+                coolantTemp: coolantTemp,
                 latitude: latitude,
                 longitude: longitude,
+                engineOilTemp: engineOilTemp,
+                intakeAirTemp: intakeAirTemp,
+                fuelLevel: fuelLevel,
+                maf: maf,
               ),
           createCompanionCallback:
               ({
@@ -3258,9 +3539,13 @@ class $$TripPointsTableTableManager
                 required int speed,
                 required int rpm,
                 required int throttlePosition,
-                required int engineTemp,
+                required int coolantTemp,
                 Value<double?> latitude = const Value.absent(),
                 Value<double?> longitude = const Value.absent(),
+                Value<int?> engineOilTemp = const Value.absent(),
+                Value<int?> intakeAirTemp = const Value.absent(),
+                Value<int?> fuelLevel = const Value.absent(),
+                Value<double?> maf = const Value.absent(),
               }) => TripPointsCompanion.insert(
                 id: id,
                 tripId: tripId,
@@ -3268,9 +3553,13 @@ class $$TripPointsTableTableManager
                 speed: speed,
                 rpm: rpm,
                 throttlePosition: throttlePosition,
-                engineTemp: engineTemp,
+                coolantTemp: coolantTemp,
                 latitude: latitude,
                 longitude: longitude,
+                engineOilTemp: engineOilTemp,
+                intakeAirTemp: intakeAirTemp,
+                fuelLevel: fuelLevel,
+                maf: maf,
               ),
           withReferenceMapper: (p0) => p0
               .map(

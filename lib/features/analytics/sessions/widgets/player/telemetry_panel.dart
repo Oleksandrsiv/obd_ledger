@@ -34,7 +34,7 @@ class TelemetryPanel extends StatelessWidget {
           _buildStatCard(
             context,
             title: 'Temp',
-            value: '${point?.engineTemp ?? 0}',
+            value: '${point?.coolantTemp ?? 0}',
             unit: '°C',
             icon: Icons.thermostat,
             color: colorScheme.error,

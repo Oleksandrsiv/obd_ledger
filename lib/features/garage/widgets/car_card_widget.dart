@@ -50,8 +50,8 @@ class CarCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 8),
-            Text('VIN: ${car.vin}'),
-            Text('Mileage: ${car.savedTotalDistance} km'),
+            // Text('VIN: ${car.vin}'),
+            // Text('Mileage: ${car.savedTotalDistance} km'),
 
             if (car.isAccuracyWarning) ...[
               const SizedBox(height: 8),

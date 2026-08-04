@@ -241,6 +241,22 @@ class ObdService implements IObdScanner {
     return 0;
   }
 
+
+  @override
+  Future<int> readEngineOilTemp() async {
+    if (_currentState != ObdConnectionState.connected) return 0;
+    try {
+      String response = await _sendCommand("015C");
+      if (response.startsWith("415C") && response.length >= 6) {
+        String hexA = response.substring(4, 6);
+        return int.parse(hexA, radix: 16) - 40;
+      }
+    } catch (e) {
+      log("Error reading oil temp: $e");
+    }
+    return 0;
+  }
+
   @override
   Future<int> readEngineLoad() async {
     if (_currentState != ObdConnectionState.connected) return 0;
@@ -269,6 +285,67 @@ class ObdService implements IObdScanner {
       log("Error reading throttle position: $e");
     }
     return 0;
+  }
+
+  @override
+  Future<int> readIntakeAirTemp() async {
+    if (_currentState != ObdConnectionState.connected) return 0;
+    try {
+      String response = await _sendCommand("010F");
+      if (response.startsWith("410F") && response.length >= 6) {
+        String hexA = response.substring(4, 6);
+        return int.parse(hexA, radix: 16) - 40;
+      }
+    } catch (e) {
+      log("Error reading IAT: $e");
+    }
+    return 0;
+  }
+
+  @override
+  Future<double> readMAF() async {
+    if (_currentState != ObdConnectionState.connected) return 0.0;
+    try {
+      String response = await _sendCommand("0110");
+      if (response.startsWith("4110") && response.length >= 8) {
+        String hexA = response.substring(4, 6);
+        String hexB = response.substring(6, 8);
+        int a = int.parse(hexA, radix: 16);
+        int b = int.parse(hexB, radix: 16);
+        return ((a * 256) + b) / 100.0;
+      }
+    } catch (e) {
+      log("Error reading MAF: $e");
+    }
+    return 0.0;
+  }
+
+  @override
+  Future<int> readFuelLevel() async {
+    if (_currentState != ObdConnectionState.connected) return 0;
+    try {
+      String response = await _sendCommand("012F");
+      if (response.startsWith("412F") && response.length >= 6) {
+        String hexA = response.substring(4, 6);
+        return (int.parse(hexA, radix: 16) * 100) ~/ 255;
+      }
+    } catch (e) {
+      log("Error reading fuel level: $e");
+    }
+    return 0;
+  }
+
+  @override
+  Future<String> readBatteryVoltage() async {
+    if (_currentState != ObdConnectionState.connected) return "--";
+    try {
+      // The AT RV command must returns the voltage directly as text, for example "12.4V"
+      String response = await _sendCommand("ATRV");
+      return response.isNotEmpty ? response : "--";
+    } catch (e) {
+      log("Error reading battery voltage: $e");
+    }
+    return "--";
   }
 
 }

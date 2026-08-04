@@ -20,7 +20,11 @@ class ChartFilters extends StatelessWidget {
       items: const [
         DropdownMenuItem(value: YAxisType.speed, child: Text('Speed (km/h)')),
         DropdownMenuItem(value: YAxisType.rpm, child: Text('RPM')),
-        DropdownMenuItem(value: YAxisType.temperature, child: Text('Temp (°C)')),
+        DropdownMenuItem(value: YAxisType.coolantTemp, child: Text('Coolant Temp (°C)')),
+        DropdownMenuItem(value: YAxisType.oilTemp, child: Text('Oil Temp (°C)')),
+        DropdownMenuItem(value: YAxisType.intakeAirTemp, child: Text('Intake Air Temp (°C)')),
+        DropdownMenuItem(value: YAxisType.maf, child: Text('Mass Air Flow (g/s)')),
+        DropdownMenuItem(value: YAxisType.fuelLevel, child: Text('Fuel Level (%)')),
       ],
       onChanged: (val) => onYChanged(val!),
     );
