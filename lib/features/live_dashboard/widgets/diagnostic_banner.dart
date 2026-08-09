@@ -2,8 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:obd_ledger/features/diagnostic/bloc/diagnostic_bloc.dart';
 
-class DiagnosticWarningBanner extends StatelessWidget {
+class DiagnosticWarningBanner extends StatefulWidget {
   const DiagnosticWarningBanner({super.key});
+
+  @override
+  State<DiagnosticWarningBanner> createState() =>
+      _DiagnosticWarningBannerState();
+}
+
+class _DiagnosticWarningBannerState extends State<DiagnosticWarningBanner> {
+  bool _isHidden = false;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +28,7 @@ class DiagnosticWarningBanner extends StatelessWidget {
         return AnimatedSize(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOutCubic,
-          child: !hasErrors
+          child: !hasErrors || _isHidden
               ? const SizedBox.shrink()
               : Container(
             width: double.infinity,
@@ -38,7 +46,10 @@ class DiagnosticWarningBanner extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.warning_amber_rounded, color: colorScheme.error),
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      color: colorScheme.error,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Check Engine / DTC Detected',
@@ -52,15 +63,17 @@ class DiagnosticWarningBanner extends StatelessWidget {
                 ),
                 const SizedBox(height: 12),
 
-                ...state.codes.map((dtc) => Padding(
-                  padding: const EdgeInsets.only(bottom: 4),
-                  child: Text(
-                    '• ${dtc.code}: ${dtc.description}',
-                    style: TextStyle(
-                      color: isDark ? Colors.white70 : Colors.black87,
+                ...state.codes.map(
+                      (dtc) => Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(
+                      '• ${dtc.code}: ${dtc.description}',
+                      style: TextStyle(
+                        color: isDark ? Colors.white70 : Colors.black87,
+                      ),
                     ),
                   ),
-                )),
+                ),
 
                 if (state.errorMessage != null)
                   Text(
@@ -69,18 +82,40 @@ class DiagnosticWarningBanner extends StatelessWidget {
                   ),
 
                 const SizedBox(height: 12),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: FilledButton.tonal(
-                    onPressed: () {
-                      context.read<DiagnosticBloc>().add(ClearTroubleCodes());
-                    },
-                    style: FilledButton.styleFrom(
-                      backgroundColor: colorScheme.error,
-                      foregroundColor: Colors.white,
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _isHidden = true;
+                        });
+                      },
+                      style: TextButton.styleFrom(
+                        foregroundColor: isDark
+                            ? Colors.white70
+                            : Colors.black54,
+                      ),
+                      child: const Text('Hide'),
                     ),
-                    child: const Text('Clear Codes'),
-                  ),
+                    const SizedBox(width: 8),
+                    FilledButton.tonal(
+                      onPressed: () {
+                        context.read<DiagnosticBloc>().add(
+                          ClearTroubleCodes(),
+                        );
+                        setState(() {
+                          _isHidden = false;
+                        });
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: colorScheme.error,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text('Clear Codes'),
+                    ),
+                  ],
                 ),
               ],
             ),
