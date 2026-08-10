@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:drift/drift.dart' as drift;
 import 'package:obd_ledger/features/analytics/data/trips.dart';
 import '../../../core/database/database.dart';
 import '../../live_dashboard/data/trip_points.dart';
@@ -27,5 +28,30 @@ class TripsDao extends DatabaseAccessor<AppDatabase> with _$TripsDaoMixin {
 
   Future<List<Trip>> getTripsForCar(int carId) {
     return (select(trips)..where((t) => t.carId.equals(carId))).get();
+  }
+
+  // Method for closing "hanging" trips
+  Future<void> cleanUpOrphanedTrips() async {
+    final orphanedTrips = await (select(trips)..where((t) => t.endTimestamp.isNull())).get();
+
+    if (orphanedTrips.isEmpty) return;
+
+    for (final trip in orphanedTrips) {
+      final lastPoint = await (select(tripPoints)
+        ..where((p) => p.tripId.equals(trip.id))
+        ..orderBy([
+              (p) => drift.OrderingTerm(expression: p.timestamp, mode: drift.OrderingMode.desc)
+        ])
+        ..limit(1))
+          .getSingleOrNull();
+
+      final endTimestamp = lastPoint?.timestamp ?? trip.startTimestamp;
+
+      await update(trips).replace(
+        trip.copyWith(
+          endTimestamp: drift.Value(endTimestamp),
+        ),
+      );
+    }
   }
 }

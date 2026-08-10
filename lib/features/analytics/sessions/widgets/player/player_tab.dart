@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../bloc/session_player_cubit.dart';
 import '../../bloc/session_player_state.dart';
-import 'map_placeholder.dart';
+import 'session_map.dart';
 import '../common/session_scrubber.dart';
 import 'telemetry_panel.dart';
 
@@ -17,7 +17,7 @@ class PlayerTab extends StatelessWidget {
           children: [
             // Takes up all available free space on top
             const Expanded(
-              child: MapPlaceholder(),
+              child: SessionMap(),
             ),
             const SizedBox(height: 16),
             TelemetryPanel(point: state.currentPoint),

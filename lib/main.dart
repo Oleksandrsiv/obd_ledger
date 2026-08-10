@@ -4,6 +4,7 @@ import 'package:obd_ledger/features/garage/screens/garage_screen.dart';
 import 'core/bluetooth/bluetooth_cubit.dart';
 import 'core/database/database.dart';
 import 'features/analytics/bloc/analytics_bloc.dart';
+import 'features/analytics/data/trips_dao.dart';
 import 'features/garage/bloc/car_bloc.dart';
 import 'core/theme/theme_cubit.dart';
 import 'core/service_locator.dart';
@@ -13,9 +14,11 @@ void main() async {
 // Initialize GetIt (all our BLoC, DAO, Services)
   await setupLocator();
 
-  final database = getIt<AppDatabase>();
-
+  //final database = getIt<AppDatabase>();
   //await seedMockData(database);
+
+  final tripsDao = getIt<TripsDao>();
+  await tripsDao.cleanUpOrphanedTrips();
 
   runApp(const ObdLedgerApp());
 }

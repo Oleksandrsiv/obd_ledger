@@ -12,6 +12,9 @@ class TripRecordingService {
   final IObdScanner _obdScanner;
   final TripsDao _tripsDao;
 
+  int _zeroRpmCounter = 0;
+  final int _zeroRpmThreshold = 5;
+
   bool _isPolling = false;
   int? _currentTripId;
   int? _activeCarId;
@@ -90,7 +93,9 @@ class TripRecordingService {
         distanceFilter: 5,
       ),
     ).listen((Position position) {
-      _currentPosition = position;
+      if (position.accuracy <= 25.0) {
+        _currentPosition = position;
+      }
     });
   }
 
@@ -106,6 +111,7 @@ class TripRecordingService {
     _lastSavedPoint = null;
     _pointsBatch.clear();
     _smoothedFuelLevel = null;
+    _zeroRpmCounter = 0;
   }
 
   Future<void> stopRecordingToDatabase() async {
@@ -222,13 +228,24 @@ class TripRecordingService {
 
       // RECORD TO DATABASE ONLY IF TripId != null (engine started)
       if (_currentTripId != null) {
-
+        // FUSE
         if (currentData.rpm == 0) {
-          log("Engine stopped (RPM = 0). Finishing trip...");
-          await stopRecordingToDatabase();
-          _tripStatusController.add(false); // end of trip
-          return; // finish and don`t save the last point
+          _zeroRpmCounter++;
+
+          if (_zeroRpmCounter >= _zeroRpmThreshold) {
+            log("Engine definitely stopped (RPM = 0 for 5 ticks). Finishing trip...");
+            await stopRecordingToDatabase();
+            _tripStatusController.add(false);
+            return;
+          } else {
+            log("Warning: RPM is 0, ignoring glitch (Tick $_zeroRpmCounter/$_zeroRpmThreshold)");
+            return; // Skip saving this "buggy" point, but don't kill the trip!
+          }
+        } else {
+          // If there are revolutions - reset the glitch counter
+          _zeroRpmCounter = 0;
         }
+
 
 
         if (_shouldSavePoint(currentData)) {
