@@ -5,6 +5,7 @@ import '../../features/analytics/data/trips_dao.dart';
 import '../../features/live_dashboard/data/realtime_data_model.dart';
 import '../database/database.dart';
 import 'obd_service/iobd_service.dart';
+import 'foreground_task_handler.dart';
 
 import 'package:geolocator/geolocator.dart';
 
@@ -42,6 +43,8 @@ class TripRecordingService {
   StreamSubscription<Position>? _positionSubscription;
   Position? _currentPosition;
 
+  StreamSubscription<RealtimeData>? _telemetrySubscription;
+
   // list for batching
   final List<TripPointsCompanion> _pointsBatch = [];
   static const int _batchSizeLimit = 60;
@@ -62,6 +65,11 @@ class TripRecordingService {
 
     _startLocationTracking();
 
+    ForegroundTaskManager.start();
+
+    _telemetrySubscription = realtimeDataStream.listen((data) {
+      ForegroundTaskManager.sendTelemetry(data.rpm, data.speed);
+    });
 
     _isPolling = true;
     _runPollingLoop();
@@ -73,6 +81,10 @@ class TripRecordingService {
     _positionSubscription?.cancel();
     _positionSubscription = null;
     _currentPosition = null;
+
+    _telemetrySubscription?.cancel();
+    _telemetrySubscription = null;
+    ForegroundTaskManager.stop();
   }
 
   Future<void> _startLocationTracking() async {

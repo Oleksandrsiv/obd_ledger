@@ -16,6 +16,13 @@
     <key>NSBluetoothPeripheralUsageDescription</key>
     <string>We need Bluetooth access to connect to your OBD2 adapter.</string>
 
+    <!-- Background Modes (Required for background GPS and Bluetooth) -->
+        <key>UIBackgroundModes</key>
+        <array>
+            <string>location</string>
+            <string>bluetooth-central</string>
+        </array>
+
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

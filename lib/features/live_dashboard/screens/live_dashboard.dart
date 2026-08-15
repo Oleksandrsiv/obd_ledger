@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../diagnostic/bloc/diagnostic_bloc.dart';
 import '../widgets/dashboard_body.dart';
 import '../widgets/diagnostic_banner.dart';
@@ -24,6 +25,14 @@ class _LiveDashboardTabState extends State<LiveDashboardTab> {
     context.read<DiagnosticBloc>().add(
       LoadTroubleCodes(widget.carMake),
     );
+
+    WakelockPlus.enable();
+  }
+
+  @override
+  void dispose() {
+    WakelockPlus.disable();
+    super.dispose();
   }
 
   @override

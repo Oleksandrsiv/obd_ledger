@@ -8,10 +8,12 @@ import 'features/analytics/data/trips_dao.dart';
 import 'features/garage/bloc/car_bloc.dart';
 import 'core/theme/theme_cubit.dart';
 import 'core/service_locator.dart';
+import 'core/services/foreground_task_handler.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-// Initialize GetIt (all our BLoC, DAO, Services)
+  // Initialize GetIt (all our BLoC, DAO, Services)
   await setupLocator();
 
   //final database = getIt<AppDatabase>();
@@ -19,6 +21,8 @@ void main() async {
 
   final tripsDao = getIt<TripsDao>();
   await tripsDao.cleanUpOrphanedTrips();
+
+  await ForegroundTaskManager.init();
 
   runApp(const ObdLedgerApp());
 }
@@ -42,11 +46,6 @@ class ObdLedgerApp extends StatelessWidget {
             title: 'OBD Ledger',
             theme: themeData,
             home: const GarageScreen(),
-            // home: const CarDetailsScreen(
-            //   carId: 1,
-            //   carMake: 'Subaru',
-            //   carName: 'My Forester OBD', currentMileage: 500,
-            // ),
           );
         },
       ),
