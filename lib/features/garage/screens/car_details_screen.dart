@@ -8,6 +8,8 @@ import 'package:obd_ledger/core/service_locator.dart';
 import '../../live_dashboard/bloc/dashboard_bloc.dart';
 import '../../maintenance/bloc/maintenance_bloc.dart';
 import '../../maintenance/screens/service_tab.dart';
+import '../../../../core/widgets/app_confirm_dialog.dart';
+import '../bloc/car_bloc.dart';
 
 class CarDetailsScreen extends StatefulWidget {
   final int carId;
@@ -49,6 +51,30 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
               Navigator.pop(context);
             },
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+              onPressed: () async {
+                // We show the dialogue and wait for the response.
+                final isConfirmed = await showAppConfirmDialog(
+                  context: context,
+                  title: 'Delete Vehicle?',
+                  message: 'Are you sure you want to delete this car? This action cannot be undone and will erase all related trips and maintenance records.',
+                  confirmText: 'Delete',
+                  isDestructive: true,
+                );
+
+                // If the user clicked "Delete", we send an event to BLoC
+                if (isConfirmed && context.mounted) {
+                  context.read<CarBloc>().add(DeleteCarEvent(widget.carId));
+
+                  // If we were on the car details screen, we go back to the garage
+                  Navigator.of(context).pop();
+                }
+              },
+            )
+
+          ],
         ),
         body: IndexedStack(
           index: _currentIndex,

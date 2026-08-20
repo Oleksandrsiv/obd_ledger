@@ -33,3 +33,8 @@ class RenameCar extends CarEvent {
 
   RenameCar(this.carId, this.newName);
 }
+
+class DeleteCarEvent extends CarEvent {
+  final int carId;
+  DeleteCarEvent(this.carId);
+}

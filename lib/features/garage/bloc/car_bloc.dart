@@ -25,6 +25,7 @@ class CarBloc extends Bloc<CarEvent, CarState> {
     on<SyncMileage>(_onSyncMileage);
     on<ProcessScannedVin>(_onProcessScannedVin);
     on<RenameCar>(_onRenameCar);
+    on<DeleteCarEvent>(_onDeleteCar);
 
     _tripStatusSubscription = _tripRecordingService.isTripActiveStream.listen((isTripActive) {
       if (!isTripActive) {
@@ -184,6 +185,19 @@ class CarBloc extends Bloc<CarEvent, CarState> {
 
     } catch (e) {
       emit(state.copyWith(errorMessage: "Error renaming car: $e"));
+    }
+  }
+
+  Future<void> _onDeleteCar(
+      DeleteCarEvent event,
+      Emitter<CarState> emit,
+      ) async {
+    try {
+      await _carsDao.deleteCar(event.carId);
+      // After deleting, simply ask BLoC to reload the car list
+      add(LoadCars());
+    } catch (e) {
+      emit(state.copyWith(errorMessage: "Failed to delete car: $e"));
     }
   }
 }

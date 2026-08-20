@@ -43,6 +43,24 @@ class BluetoothCubit extends Cubit<BluetoothState> {
       return;
     }
 
+      // Notification request
+      // Works on Android 13+
+      if (await Permission.notification.isDenied) {
+        await Permission.notification.request();
+      }
+
+      // Request to ignore battery optimization (To keep GPS from sleeping)
+      if (await Permission.ignoreBatteryOptimizations.isDenied) {
+        // This request will bring up a system window where the user will be prompted
+        // "Allow the app to run in the background without restrictions"
+        await Permission.ignoreBatteryOptimizations.request();
+      }
+
+      // Check the location in the background (if not already requested)
+      if (await Permission.locationAlways.isDenied) {
+        await Permission.locationAlways.request();
+      }
+
     try {
       // Getting list of already paired devices
       List<BluetoothDevice> devices =

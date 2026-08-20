@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:obd_ledger/features/maintenance/bloc/maintenance_bloc.dart';
 import '../../../core/database/database.dart';
+import '../../../core/widgets/app_confirm_dialog.dart';
 
 class MaintenanceCard extends StatelessWidget {
   final MaintenanceTask task;
@@ -95,8 +96,20 @@ class MaintenanceCard extends StatelessWidget {
                   icon: const Icon(Icons.delete_outline),
                   color: colorScheme.error.withOpacity(0.7),
                   tooltip: 'Delete task',
-                  onPressed: () {
-                    context.read<MaintenanceBloc>().add(DeleteTask(task));
+                  onPressed: () async {
+                    // We show the dialogue and wait for the response.
+                    final isConfirmed = await showAppConfirmDialog(
+                      context: context,
+                      title: 'Delete Task?',
+                      message: 'Are you sure you want to delete this maintenance task? This action cannot be undone.',
+                      confirmText: 'Delete',
+                      isDestructive: true,
+                    );
+
+                    if (isConfirmed && context.mounted) {
+                      context.read<MaintenanceBloc>().add(DeleteTask(task));
+
+                    }
                   },
                 ),
               ],

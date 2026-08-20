@@ -16,4 +16,8 @@ class CarsDao extends DatabaseAccessor<AppDatabase> with _$CarsDaoMixin {
   Future<int> insertOrUpdateCar(Insertable<Car> car) =>
       into(cars).insertOnConflictUpdate(car);
 
+  Future<int> deleteCar(int id) {
+    return (delete(cars)..where((car) => car.id.equals(id))).go();
+  }
+
 }
