@@ -97,8 +97,69 @@ class ObdService implements IObdScanner {
 
   @override
   Future<String> readVin() async {
-    String response = await _sendCommand("0902");
-    return response;
+    const int maxRetries = 3;
+    const int delaySeconds = 5;
+
+    for (int attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        log("Attempt $attempt to read VIN...");
+        final rawResponse = await _sendCommand("0902");
+
+        // Clearing service messages
+        String cleaned = rawResponse
+            .replaceAll('SEARCHING...', '')
+            .replaceAll('NODATA', '')
+            .replaceAll('ERROR', '')
+            .trim();
+
+        // Remove CAN multiframe headers (e.g. "0140:")
+        cleaned = cleaned.replaceFirst(RegExp(r'^[0-9A-Fa-f]+:'), '');
+        // Remove the markers of the following frames ("1:", "2:", etc.)
+        cleaned = cleaned.replaceAll(RegExp(r'[0-9A-Fa-f]:'), '');
+
+        // We leave only valid HEX
+        final hexOnly = cleaned.replaceAll(RegExp(r'[^0-9A-Fa-f]'), '');
+
+        // HEX -> ASCII
+        final buffer = StringBuffer();
+        for (int i = 0; i + 1 < hexOnly.length; i += 2) {
+          final charCode = int.parse(
+            hexOnly.substring(i, i + 2),
+            radix: 16,
+          );
+
+          // Filter out non-printable characters
+          if (charCode >= 32 && charCode <= 126) {
+            buffer.write(String.fromCharCode(charCode));
+          }
+        }
+
+        final asciiString = buffer.toString();
+
+        // Looking for 17 characters of the VIN code
+        final vinRegex = RegExp(r'[A-HJ-NPR-Z0-9]{17}');
+        final match = vinRegex.firstMatch(asciiString);
+
+        if (match != null) {
+          log("VIN successfully decoded: ${match.group(0)}");
+          return match.group(0)!; // success
+        }
+
+        log('VIN not found in ASCII stream on attempt $attempt. ASCII: $asciiString');
+      } catch (e) {
+        log("Error reading VIN on attempt $attempt: $e");
+      }
+
+      // If this is not the last attempt - wait 5 seconds
+      if (attempt < maxRetries) {
+        log("Retrying VIN read in $delaySeconds seconds...");
+        await Future.delayed(const Duration(seconds: delaySeconds));
+      }
+    }
+
+    // If all 3 attempts fail, return a stable stub,
+    log("Failed to read VIN after $maxRetries attempts.");
+    return "UNKNOWN_VIN";
   }
 
   @override

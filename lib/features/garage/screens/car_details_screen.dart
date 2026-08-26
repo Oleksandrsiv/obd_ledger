@@ -38,7 +38,7 @@ class _CarDetailsScreenState extends State<CarDetailsScreen> {
       providers: [
         BlocProvider(create: (context) => getIt<DiagnosticBloc>()),
         BlocProvider(
-          create: (context) => getIt<DashboardBloc>()..add(DashboardStartPolling(widget.carId)),
+          create: (context) => getIt<DashboardBloc>()..add(DashboardStartPolling()),
         ),
         BlocProvider(create: (context) => getIt<MaintenanceBloc>()),
       ],

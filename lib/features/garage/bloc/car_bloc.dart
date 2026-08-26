@@ -71,6 +71,10 @@ class CarBloc extends Bloc<CarEvent, CarState> {
     // If no car is selected or there's no connection, do nothing
     if (state.activeCar == null) return;
 
+    if (state.activeCar!.id != _tripRecordingService.connectedCarId) {
+      return;
+    }
+
     emit(state.copyWith(isSyncing: true));
 
     try {
@@ -155,6 +159,10 @@ class CarBloc extends Bloc<CarEvent, CarState> {
         await _carsDao.insertOrUpdateCar(newCarCompanion);
 
         existingCar = await _carsDao.getCarByVin(cleanVin);
+      }
+
+      if (existingCar != null) {
+        _tripRecordingService.setConnectedCarId(existingCar.id);
       }
 
       // Update the list of garage and make this car active

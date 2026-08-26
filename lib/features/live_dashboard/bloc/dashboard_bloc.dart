@@ -22,7 +22,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   void _onStartPolling(DashboardStartPolling event, Emitter<DashboardState> emit) {
     emit(state.copyWith(isPolling: true));
 
-    _tripService.startPolling(event.carId);
+    _tripService.startPolling();
 
     _dataSubscription?.cancel();
     _dataSubscription = _tripService.realtimeDataStream.listen((data) {

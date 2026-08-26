@@ -18,7 +18,7 @@ class TripRecordingService {
 
   bool _isPolling = false;
   int? _currentTripId;
-  int? _activeCarId;
+  int? _connectedCarId;
   int _tickCounter = 0;
   bool _isInitialMileageFetched = false;
   int? _lastKnownMileage;
@@ -40,6 +40,8 @@ class TripRecordingService {
 
   int? get lastKnownMileage => _lastKnownMileage;
 
+  int? get connectedCarId => _connectedCarId;
+
   StreamSubscription<Position>? _positionSubscription;
   Position? _currentPosition;
 
@@ -59,9 +61,12 @@ class TripRecordingService {
 
   TripRecordingService(this._obdScanner, this._tripsDao);
 
-  void startPolling(int carId) {
-    _activeCarId = carId;
-    if (_isPolling) return;
+  void setConnectedCarId(int carId) {
+    _connectedCarId = carId;
+  }
+
+  void startPolling() {
+    if (_isPolling || _connectedCarId == null) return;
 
     _startLocationTracking();
 
@@ -112,11 +117,11 @@ class TripRecordingService {
   }
 
   Future<void> startRecordingToDatabase() async {
-    if (_currentTripId != null || _activeCarId == null) return;
+    if (_currentTripId != null || _connectedCarId == null) return;
 
     // Create a new trip session in the database
     _currentTripId = await _tripsDao.startTrip(TripsCompanion.insert(
-      carId: _activeCarId!,
+      carId: _connectedCarId!,
       startTimestamp: DateTime.now().millisecondsSinceEpoch,
     ));
 
