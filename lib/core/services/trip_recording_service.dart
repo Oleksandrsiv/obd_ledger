@@ -129,6 +129,8 @@ class TripRecordingService {
     _pointsBatch.clear();
     _smoothedFuelLevel = null;
     _zeroRpmCounter = 0;
+
+    _slowPollCounter = _slowPollInterval;
   }
 
   Future<void> stopRecordingToDatabase() async {
@@ -174,123 +176,169 @@ class TripRecordingService {
 
   Future<void> _onTick() async {
     try {
-      int currentRpm = await _obdScanner.readEngineRpm();
-      int currentSpeed = await _obdScanner.readVehicleSpeed();
-      int currentLoad = await _obdScanner.readEngineLoad();
-      int currentThrottle = await _obdScanner.readThrottlePosition();
-      double currentMaf = await _obdScanner.readMAF();
+      final fastData = await _readFastParameters();
 
+      await _updateSlowParameters();
 
-      _slowPollCounter++;
-      if (_slowPollCounter >= _slowPollInterval) {
-        _cachedCoolantTemp = await _obdScanner.readCoolantTemp();
-        _cachedEngineOilTemp = await _obdScanner.readEngineOilTemp();
-        _cachedIat = await _obdScanner.readIntakeAirTemp();
-        _cachedBattery = await _obdScanner.readBatteryVoltage();
+      final currentData = _buildRealtimeData(fastData);
 
-        int rawFuel = await _obdScanner.readFuelLevel();
-
-        if (rawFuel > 0) {
-          if (_smoothedFuelLevel == null) {
-            // On the first read, we trust the data 100% to set a starting point
-            _smoothedFuelLevel = rawFuel.toDouble();
-          } else {
-            _smoothedFuelLevel = (_fuelSmoothingAlpha * rawFuel) + ((1 - _fuelSmoothingAlpha) * _smoothedFuelLevel!);
-          }
-          _cachedFuelLevel = _smoothedFuelLevel!.round();
-        }
-
-        _slowPollCounter = 0;
-      }
-
-
-      final currentData = RealtimeData(
-        speed: currentSpeed,
-        rpm: currentRpm,
-        engineLoad: currentLoad,
-        throttlePosition: currentThrottle,
-        maf: currentMaf,
-
-        coolantTemp: _cachedCoolantTemp,
-        engineOilTemp: _cachedEngineOilTemp,
-        intakeAirTemp: _cachedIat,
-        fuelLevel: _cachedFuelLevel,
-        batteryVoltage: _cachedBattery,
-        timestamp: DateTime.now(),
-      );
-
-      if (currentRpm > 0) {
-        if (!_isInitialMileageFetched || _tickCounter >= 60) {
-
-          int? distance = await _obdScanner.readDistanceSinceCodesCleared();
-
-          if (distance != null) {
-            _lastKnownMileage = distance; // Cache the successful result
-            _startTripMileage ??= distance;
-          }
-
-          _isInitialMileageFetched = true;
-          _tickCounter = 0; // Reset the counter after the request
-        }
-
-        _tickCounter++;
-      } else {
-        // If the engine is turned off, we reset the flag for the next trip.
-        // We do NOT reset the _lastKnownMileage variable, because the BLoC needs it for saving!
-        _isInitialMileageFetched = false;
-        _tickCounter = 0;
-      }
+      await _updateMileage(currentData.rpm);
 
       _dataController.add(currentData);
 
-      // RECORD TO DATABASE ONLY IF TripId != null (engine started)
-      if (_currentTripId != null) {
-        // FUSE
-        if (currentData.rpm == 0) {
-          _zeroRpmCounter++;
-
-          if (_zeroRpmCounter >= _zeroRpmThreshold) {
-            log("Engine definitely stopped (RPM = 0 for 5 ticks). Finishing trip...");
-            await stopRecordingToDatabase();
-            _tripStatusController.add(false);
-            return;
-          } else {
-            log("Warning: RPM is 0, ignoring glitch (Tick $_zeroRpmCounter/$_zeroRpmThreshold)");
-            return; // Skip saving this "buggy" point, but don't kill the trip!
-          }
-        } else {
-          // If there are revolutions - reset the glitch counter
-          _zeroRpmCounter = 0;
-        }
-
-
-
-        if (_shouldSavePoint(currentData)) {
-          _pointsBatch.add(TripPointsCompanion.insert(
-            tripId: _currentTripId!,
-            timestamp: currentData.timestamp.millisecondsSinceEpoch,
-            speed: currentData.speed,
-            rpm: currentData.rpm,
-            throttlePosition: currentData.throttlePosition,
-            coolantTemp: currentData.coolantTemp,
-            engineOilTemp: drift.Value(currentData.engineOilTemp),
-            intakeAirTemp: drift.Value(currentData.intakeAirTemp),
-            fuelLevel: drift.Value(currentData.fuelLevel),
-            maf: drift.Value(currentData.maf),
-            latitude: drift.Value(_currentPosition?.latitude),
-            longitude: drift.Value(_currentPosition?.longitude),
-          ));
-
-          _lastSavedPoint = currentData;
-
-          // Save the batch to the database if it's full
-          if (_pointsBatch.length >= _batchSizeLimit) {
-            await _flushBatch();
-          }
-        }
-      }
+      await _processTripRecording(currentData);
     } catch (e) {
       log("Error reading telemetry: $e");
+    }
+  }
+
+  Future<({int rpm, int speed, int load, int throttle, double maf})>
+  _readFastParameters() async {
+    return (
+    rpm: await _obdScanner.readEngineRpm(),
+    speed: await _obdScanner.readVehicleSpeed(),
+    load: await _obdScanner.readEngineLoad(),
+    throttle: await _obdScanner.readThrottlePosition(),
+    maf: await _obdScanner.readMAF(),
+    );
+  }
+
+  Future<void> _updateSlowParameters() async {
+    // Counter for slow loop
+    _slowPollCounter++;
+
+    // We poll slow parameters once every 5 cycles
+    // (approximately every 5 seconds).
+    if (_slowPollCounter >= _slowPollInterval) {
+      _cachedCoolantTemp = await _obdScanner.readCoolantTemp();
+      _cachedEngineOilTemp = await _obdScanner.readEngineOilTemp();
+      _cachedIat = await _obdScanner.readIntakeAirTemp();
+      _cachedBattery = await _obdScanner.readBatteryVoltage();
+
+      int rawFuel = await _obdScanner.readFuelLevel();
+
+      if (rawFuel > 0) {
+        if (_smoothedFuelLevel == null) {
+          // On the first read, we trust the data 100%
+          // to set a starting point.
+          _smoothedFuelLevel = rawFuel.toDouble();
+        } else {
+          // 5% confidence in new data, 95% in old data.
+          _smoothedFuelLevel =
+              (_fuelSmoothingAlpha * rawFuel) +
+                  ((1 - _fuelSmoothingAlpha) * _smoothedFuelLevel!);
+        }
+
+        _cachedFuelLevel = _smoothedFuelLevel!.round();
+      }
+
+      _slowPollCounter = 0;
+    }
+  }
+
+  RealtimeData _buildRealtimeData(
+      ({int rpm, int speed, int load, int throttle, double maf}) fastData,
+      ) {
+    return RealtimeData(
+      speed: fastData.speed,
+      rpm: fastData.rpm,
+      engineLoad: fastData.load,
+      throttlePosition: fastData.throttle,
+      maf: fastData.maf,
+      coolantTemp: _cachedCoolantTemp,
+      engineOilTemp: _cachedEngineOilTemp,
+      intakeAirTemp: _cachedIat,
+      fuelLevel: _cachedFuelLevel,
+      batteryVoltage: _cachedBattery,
+      timestamp: DateTime.now(),
+    );
+  }
+
+  Future<void> _updateMileage(int currentRpm) async {
+    if (currentRpm > 0) {
+      if (!_isInitialMileageFetched || _tickCounter >= 60) {
+        int? distance =
+        await _obdScanner.readDistanceSinceCodesCleared();
+
+        if (distance != null) {
+          // Cache the successful result.
+          _lastKnownMileage = distance;
+
+          _startTripMileage ??= distance;
+        }
+
+        _isInitialMileageFetched = true;
+
+        // Reset the counter after the request.
+        _tickCounter = 0;
+      }
+
+      _tickCounter++;
+    } else {
+      // If the engine is turned off, reset the flag for the next trip.
+      //
+      // We do NOT reset _lastKnownMileage because CarBloc
+      // needs it for saving.
+      _isInitialMileageFetched = false;
+      _tickCounter = 0;
+    }
+  }
+
+  Future<void> _processTripRecording(RealtimeData currentData) async {
+    // RECORD TO DATABASE ONLY IF TripId != null (engine started)
+    if (_currentTripId == null) return;
+
+    // FUSE
+    if (currentData.rpm == 0) {
+      _zeroRpmCounter++;
+
+      if (_zeroRpmCounter >= _zeroRpmThreshold) {
+        log(
+          "Engine definitely stopped "
+              "(RPM = 0 for 5 ticks). Finishing trip...",
+        );
+
+        await stopRecordingToDatabase();
+        _tripStatusController.add(false);
+        return;
+      } else {
+        log(
+          "Warning: RPM is 0, ignoring glitch "
+              "(Tick $_zeroRpmCounter/$_zeroRpmThreshold)",
+        );
+
+        // Skip saving this "buggy" point, but don't kill the trip!
+        return;
+      }
+    } else {
+      // If there are revolutions, reset the glitch counter.
+      _zeroRpmCounter = 0;
+    }
+
+    if (_shouldSavePoint(currentData)) {
+      _pointsBatch.add(
+        TripPointsCompanion.insert(
+          tripId: _currentTripId!,
+          timestamp: currentData.timestamp.millisecondsSinceEpoch,
+          speed: currentData.speed,
+          rpm: currentData.rpm,
+          throttlePosition: currentData.throttlePosition,
+          coolantTemp: currentData.coolantTemp,
+          engineOilTemp: drift.Value(currentData.engineOilTemp),
+          intakeAirTemp: drift.Value(currentData.intakeAirTemp),
+          fuelLevel: drift.Value(currentData.fuelLevel),
+          maf: drift.Value(currentData.maf),
+          latitude: drift.Value(_currentPosition?.latitude),
+          longitude: drift.Value(_currentPosition?.longitude),
+        ),
+      );
+
+      _lastSavedPoint = currentData;
+
+      // Save the batch to the database if it's full.
+      if (_pointsBatch.length >= _batchSizeLimit) {
+        await _flushBatch();
+      }
     }
   }
 

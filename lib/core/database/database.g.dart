@@ -443,7 +443,7 @@ class $TripsTable extends Trips with TableInfo<$TripsTable, Trip> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES cars (id)',
+      'REFERENCES cars (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _startTimestampMeta = const VerificationMeta(
@@ -921,7 +921,7 @@ class $TripPointsTable extends TripPoints
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES trips (id)',
+      'REFERENCES trips (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _timestampMeta = const VerificationMeta(
@@ -1906,7 +1906,7 @@ class $MaintenanceTasksTable extends MaintenanceTasks
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES cars (id)',
+      'REFERENCES cars (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
@@ -2314,6 +2314,30 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     dtcCache,
     maintenanceTasks,
   ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'cars',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('trips', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'trips',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('trip_points', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'cars',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('maintenance_tasks', kind: UpdateKind.delete)],
+    ),
+  ]);
 }
 
 typedef $$CarsTableCreateCompanionBuilder =

@@ -4,7 +4,7 @@ import '../../garage/data/cars.dart';
 class MaintenanceTasks extends Table {
   IntColumn get id => integer().autoIncrement()();
 
-  IntColumn get carId => integer().references(Cars, #id)();
+  IntColumn get carId => integer().references(Cars, #id, onDelete: KeyAction.cascade)();
 
   TextColumn get title => text()();
 

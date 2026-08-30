@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:drift/drift.dart' as drift;
@@ -205,6 +206,7 @@ class CarBloc extends Bloc<CarEvent, CarState> {
       // After deleting, simply ask BLoC to reload the car list
       add(LoadCars());
     } catch (e) {
+      log("Failed to delete car: $e");
       emit(state.copyWith(errorMessage: "Failed to delete car: $e"));
     }
   }
