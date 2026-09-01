@@ -54,4 +54,18 @@ class TripsDao extends DatabaseAccessor<AppDatabase> with _$TripsDaoMixin {
       );
     }
   }
+
+  Future<TripPoint?> getLastKnownPosition(int carId) async {
+    final query = select(tripPoints).join([
+      innerJoin(trips, trips.id.equalsExp(tripPoints.tripId)),
+    ])
+      ..where(trips.carId.equals(carId) &
+      tripPoints.latitude.isNotNull() &
+      tripPoints.longitude.isNotNull())
+      ..orderBy([OrderingTerm.desc(tripPoints.timestamp)])
+      ..limit(1);
+
+    final row = await query.getSingleOrNull();
+    return row?.readTable(tripPoints);
+  }
 }

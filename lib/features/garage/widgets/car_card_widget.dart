@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:obd_ledger/features/garage/widgets/rename_car_dialog_window.dart';
 import '../../../core/database/database.dart';
 import '../../../features/garage/bloc/car_bloc.dart';
+import '../../car_locator/widgets/widgets.dart';
 import '../screens/car_details_screen.dart';
 
 class CarCard extends StatelessWidget {
@@ -71,13 +72,33 @@ class CarCard extends StatelessWidget {
           ),
         )
             : null,
-        trailing: IconButton(
-          icon: const Icon(Icons.edit, size: 20),
-          color: Colors.grey,
-          onPressed: () {
-            showRenameCarDialog(context, car);
-          },
+
+        trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.location_on, size: 24),
+                color: Theme.of(context).colorScheme.primary,
+                onPressed: () {
+                  CarLocatorBottomSheet.show(
+                    context,
+                    car.id,
+                    car.name ?? 'Unknown Car',
+                  );
+                },
+              ),
+
+              IconButton(
+                icon: const Icon(Icons.edit, size: 20),
+                color: Colors.grey,
+                onPressed: () {
+                  showRenameCarDialog(context, car);
+                },
+              ),
+            ],
         ),
+
+
 
         onTap: () {
           context.read<CarBloc>().add(SelectCar(car.id));

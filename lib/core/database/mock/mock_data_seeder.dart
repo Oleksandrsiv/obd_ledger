@@ -45,6 +45,10 @@ Future<void> seedMockData(AppDatabase db) async {
     final points = <TripPointsCompanion>[];
     final random = Random();
 
+    // Starting coordinates
+    double startLat = 50.450000;
+    double startLon = 30.520000;
+
     for (int i = 0; i < 100; i++) {
       final timestamp = now - 3600000 + (i * 1000); // +1 second per point
 
@@ -57,6 +61,10 @@ Future<void> seedMockData(AppDatabase db) async {
       final maf = 12.0 + random.nextDouble() * 10.0;
       final fuel = 75 - (i ~/ 25);
 
+      // Shift coordinates for each point (simulate movement in a straight line)
+      final currentLat = startLat + (i * 0.0001);
+      final currentLon = startLon + (i * 0.0001);
+
       points.add(TripPointsCompanion.insert(
         tripId: tripId,
         timestamp: timestamp,
@@ -68,6 +76,8 @@ Future<void> seedMockData(AppDatabase db) async {
         intakeAirTemp: drift.Value(iat),
         maf: drift.Value(maf),
         fuelLevel: drift.Value(fuel),
+        latitude: drift.Value(currentLat),
+        longitude: drift.Value(currentLon),
       ));
     }
 
