@@ -182,6 +182,12 @@ class TripRecordingService {
 
       final currentData = _buildRealtimeData(fastData);
 
+      if (currentData.rpm > 0 && _currentTripId == null) {
+        log("Engine started. Auto-starting trip recording...");
+        await startRecordingToDatabase();
+        _tripStatusController.add(true);
+      }
+
       await _updateMileage(currentData.rpm);
 
       _dataController.add(currentData);
@@ -385,4 +391,6 @@ class TripRecordingService {
       }
     }
   }
+
+
 }

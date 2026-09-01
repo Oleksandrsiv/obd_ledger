@@ -1,12 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:obd_ledger/features/garage/widgets/rename_car_dialog_window.dart';
+import '../../../core/database/database.dart';
 import '../../../features/garage/bloc/car_bloc.dart';
 import '../screens/car_details_screen.dart';
 
 class CarCard extends StatelessWidget {
-  final dynamic car;
+  final Car car;
   final bool isActive;
 
   const CarCard({
@@ -46,43 +46,37 @@ class CarCard extends StatelessWidget {
           car.name ?? 'Unknown Car',
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 8),
-            // Text('VIN: ${car.vin}'),
-            // Text('Mileage: ${car.savedTotalDistance} km'),
 
-            if (car.isAccuracyWarning) ...[
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Icon(
-                    Icons.warning_amber_rounded,
+        subtitle: car.isAccuracyWarning
+            ? Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Row(
+            children: [
+              Icon(
+                Icons.warning_amber_rounded,
+                color: Theme.of(context).colorScheme.tertiary,
+                size: 16,
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  'Possible mileage error (OBD tampering)',
+                  style: TextStyle(
                     color: Theme.of(context).colorScheme.tertiary,
-                    size: 16,
+                    fontSize: 12,
                   ),
-                  const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      'Possible mileage error (OBD tampering)',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.tertiary,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ],
-            IconButton(
-              icon: const Icon(Icons.edit, size: 20),
-              color: Colors.grey,
-              onPressed: () {
-                showRenameCarDialog(context, car);
-              },
-            ),
-          ],
+          ),
+        )
+            : null,
+        trailing: IconButton(
+          icon: const Icon(Icons.edit, size: 20),
+          color: Colors.grey,
+          onPressed: () {
+            showRenameCarDialog(context, car);
+          },
         ),
 
         onTap: () {
@@ -95,7 +89,7 @@ class CarCard extends StatelessWidget {
                 carId: car.id,
                 carMake: car.name ?? 'Unknown',
                 carName: car.name ?? 'My Car',
-                currentMileage: car.savedTotalDistance,
+                currentMileage: car.savedTotalDistance ?? 0,
               ),
             ),
           );

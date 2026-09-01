@@ -11,8 +11,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final TripRecordingService _tripService;
   StreamSubscription<RealtimeData>? _dataSubscription;
 
-  bool _isRecordingTrip = false;
-
   DashboardBloc(this._tripService) : super(DashboardState.initial()) {
     on<DashboardStartPolling>(_onStartPolling);
     on<DashboardStopPolling>(_onStopPolling);
@@ -31,28 +29,12 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   }
 
   void _onDataReceived(_DashboardDataReceived event, Emitter<DashboardState> emit) {
-    final currentData = event.data;
-
-    emit(state.copyWith(realtimeData: currentData));
-
-    if (currentData.rpm > 0 && !_isRecordingTrip) {
-      _isRecordingTrip = true;
-      _tripService.startRecordingToDatabase();
-    }
-    else if (currentData.rpm == 0 && _isRecordingTrip) {
-      _isRecordingTrip = false;
-      _tripService.stopRecordingToDatabase();
-    }
+    emit(state.copyWith(realtimeData: event.data));
   }
 
   void _onStopPolling(DashboardStopPolling event, Emitter<DashboardState> emit) {
     _dataSubscription?.cancel();
     _tripService.stopPolling();
-
-    if (_isRecordingTrip) {
-      _tripService.stopRecordingToDatabase();
-      _isRecordingTrip = false;
-    }
 
     emit(state.copyWith(isPolling: false));
   }
@@ -60,13 +42,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   @override
   Future<void> close() {
     _dataSubscription?.cancel();
-
     _tripService.stopPolling();
-
-    if (_isRecordingTrip) {
-      _tripService.stopRecordingToDatabase();
-    }
-
     return super.close();
   }
 }
